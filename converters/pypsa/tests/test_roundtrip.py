@@ -45,7 +45,9 @@ def test_pypsa_ce_pypsa_is_exact(clean_folder, tmp_path, via_disk):
         bundle = import_network(clean_folder)
         assert bundle.validate() == []
         back, _ = bundle_to_tables(bundle)
-        back.static = {k: v.map(lambda x: str(x) if isinstance(x, (bool, np.bool_)) else x) for k, v in
+        # DataFrame.map exists from pandas 2.1; the declared floor is pandas 2.0 (applymap there)
+        _elementwise = lambda df, f: df.map(f) if hasattr(df, "map") else df.applymap(f)
+        back.static = {k: _elementwise(v, lambda x: str(x) if isinstance(x, (bool, np.bool_)) else x) for k, v in
                        back.static.items()}
 
     # time axis: labels and all three weightings
