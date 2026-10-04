@@ -1,0 +1,74 @@
+schema_version = 1
+run = "toy3_synthetic"
+formats_note = "csv = the only format written for this synthetic run"
+toml = ["manifest.toml", "summary.toml", "qa_report.toml"]
+
+[[tables]]
+name = "investment"
+formats = ["csv"]
+nrows = 8
+columns = ["year", "component", "name", "technology", "bus", "built_mw", "built_mwh"]
+family = "investment"
+grain = "component-year"
+description = "Cumulative capacity built (retirements negative) by component and year"
+measures = ["built_mw"]
+
+[[tables]]
+name = "generation"
+formats = ["csv"]
+nrows = 1568
+columns = ["year", "scenario", "weather", "block", "period", "source_type", "component_name", "technology", "bus", "dispatch_mw", "varcost_per_mwh"]
+family = "dispatch"
+grain = "unit-period"
+description = "Per-period dispatch by unit"
+measures = ["dispatch_mw"]
+
+[[tables]]
+name = "lmp"
+formats = ["csv"]
+nrows = 1152
+columns = ["year", "scenario", "weather", "block", "bus", "period", "lmp_per_mwh", "lmp_energy", "lmp_congestion", "lmp_loss"]
+family = "price"
+grain = "bus-period"
+description = "Nodal price with energy/congestion/loss decomposition"
+measures = ["lmp_per_mwh", "lmp_energy", "lmp_congestion", "lmp_loss"]
+
+[[tables]]
+name = "flows"
+formats = ["csv"]
+nrows = 1152
+columns = ["year", "scenario", "weather", "block", "line", "period", "flow_mw"]
+family = "flow"
+grain = "line-period"
+description = "Per-period signed line flow"
+measures = ["flow_mw"]
+
+[[tables]]
+name = "curtailment"
+formats = ["csv"]
+nrows = 960
+columns = ["year", "scenario", "weather", "block", "period", "site_name", "technology", "bus", "available_mw", "dispatch_mw", "curtailed_mw"]
+family = "dispatch"
+grain = "site-period"
+description = "Available but unused output"
+measures = ["curtailed_mw"]
+
+[[tables]]
+name = "storage_state"
+formats = ["csv"]
+nrows = 576
+columns = ["year", "scenario", "weather", "block", "period", "storage", "technology", "bus", "soc_mwh", "charge_mw", "discharge_mw"]
+family = "dispatch"
+grain = "storage-period"
+description = "State of charge with charge/discharge"
+measures = ["soc_mwh", "charge_mw", "discharge_mw"]
+
+[[tables]]
+name = "qa_checks"
+formats = ["csv"]
+nrows = 5
+columns = ["check", "family", "status", "value", "tolerance", "unit", "worst_where", "count", "population", "year", "scope", "source", "note", "required"]
+family = "audit"
+grain = "check"
+description = "Run quality checks"
+measures = ["value", "count", "population"]

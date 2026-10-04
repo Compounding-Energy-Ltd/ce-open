@@ -1,0 +1,3 @@
+name,bus0,bus1,p_nom,p_min_pu,efficiency,carrier,p_nom_extendable,p_nom_min,p_nom_max,capital_cost
+North-South HVDC,North,South,600.0,-1.0,0.97,DC,True,600.0,1600.0,150.0
+East electrolyser,East,East H2,200.0,,0.7,H2,,,,

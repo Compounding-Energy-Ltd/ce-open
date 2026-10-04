@@ -1,0 +1,145 @@
+# CE data format 1.0 — the run summary `summary.toml`.
+
+[document]
+name = "summary.toml"
+scope = "results"
+required = true
+since = "1.0"
+description = "Headline numbers of a run: cost, solve status, builds."
+
+[[key]]
+path = "cost"
+type = "table"
+required = true
+description = "Objective value and its split (currency per the manifest)."
+
+[[key]]
+path = "cost.total"
+type = "float"
+required = true
+description = "Objective: present value, over the horizon, of annualised investment cost plus expected operating cost (discounted with the bundle's discount factors). total = investment_capex + operational_opex."
+
+[[key]]
+path = "cost.investment_capex"
+type = "float"
+required = true
+description = "Investment part of `total`."
+
+[[key]]
+path = "cost.operational_opex"
+type = "float"
+required = true
+description = "Operating part of `total` (including unserved-energy and any penalty terms)."
+
+[[key]]
+path = "cost.total_ex_policy_penalty"
+type = "float"
+description = "`total` without penalty terms for policy targets the system could not meet."
+
+[[key]]
+path = "solve"
+type = "table"
+description = "How the solve ended."
+
+[[key]]
+path = "solve.lower_bound"
+type = "float"
+description = "Best proven lower bound on the objective."
+
+[[key]]
+path = "solve.relative_gap"
+type = "float"
+min = 0.0
+description = "(total − lower_bound) / |total| at stop."
+
+[[key]]
+path = "solve.iterations"
+type = "int"
+min = 0
+description = "Outer iterations performed."
+
+[[key]]
+path = "solve.converged"
+type = "bool"
+description = "True when the run stopped because it met its gap target."
+
+[[key]]
+path = "solve.stop_cause"
+type = "string"
+enum = ["gap", "iteration_cap", "wall_cap"]
+description = "Why the run stopped: the gap target was met, or an iteration or wall-clock budget ran out."
+
+[[key]]
+path = "solve.wall_s"
+type = "float"
+min = 0.0
+description = "Wall-clock seconds of the solve."
+
+[[key]]
+path = "solve.mip_master"
+type = "bool"
+description = "True when the investment problem carried integer decisions (the gap then bounds the integrality gap)."
+
+[[key]]
+path = "builds_mw_by_technology"
+type = "table"
+description = "Cumulative new capacity in the final investment year, MW, keyed by technology code."
+
+[[key]]
+path = "builds_mw_by_technology.*"
+type = "float"
+description = "MW built of that technology."
+
+[[key]]
+path = "energy"
+type = "table"
+description = "Energy totals over the horizon (probability- and weight-scaled, undiscounted), MWh."
+
+[[key]]
+path = "energy.demand_mwh"
+type = "float"
+min = 0.0
+description = "Demand served plus unserved."
+
+[[key]]
+path = "energy.unserved_mwh"
+type = "float"
+min = 0.0
+description = "Unserved energy."
+
+[[key]]
+path = "energy.curtailed_mwh"
+type = "float"
+min = 0.0
+description = "Curtailed availability-bounded energy."
+
+[[key]]
+path = "emissions"
+type = "table"
+description = "Emission totals."
+
+[[key]]
+path = "emissions.co2_t"
+type = "float"
+min = 0.0
+description = "Direct CO2 over the horizon (probability- and weight-scaled, undiscounted), tonnes."
+
+[[alias]]
+legacy = "cost.total_gbp"
+canonical = "cost.total"
+
+[[alias]]
+legacy = "cost.investment_capex_gbp"
+canonical = "cost.investment_capex"
+
+[[alias]]
+legacy = "cost.operational_opex_gbp"
+canonical = "cost.operational_opex"
+
+[[alias]]
+legacy = "cost.total_ex_policy_penalty_gbp"
+canonical = "cost.total_ex_policy_penalty"
+
+[[alias]]
+legacy = "solve.lower_bound_gbp"
+canonical = "solve.lower_bound"

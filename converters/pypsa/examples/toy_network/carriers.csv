@@ -1,0 +1,11 @@
+name,co2_emissions
+gas,0.2
+OCGT,0.2
+nuclear,0.0
+onwind,0.0
+offwind,0.0
+solar,0.0
+battery,0.0
+PHS,0.0
+hydro,0.0
+H2,0.0

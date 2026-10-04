@@ -1,0 +1,2 @@
+id,name,from_bus,to_bus,existing_mw,candidate_max_mw,converter_efficiency,capex_per_mw_yr,lead_time_years
+1,coast_link,3,1,0,500,0.97,90000,5

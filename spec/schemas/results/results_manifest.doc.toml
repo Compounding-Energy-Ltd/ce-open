@@ -1,0 +1,96 @@
+# CE data format 1.0 — the table index `results_manifest.toml`.
+
+[document]
+name = "results_manifest.toml"
+scope = "results"
+required = false
+since = "1.0"
+description = """
+Inventory of the tables a run actually wrote, written last. It is the closed list a server may offer for
+download: a file not listed here is never served."""
+
+[[key]]
+path = "schema_version"
+type = "int"
+required = true
+enum = [1]
+description = "Index layout version; 1."
+
+[[key]]
+path = "run"
+type = "string"
+required = true
+description = "Run name (equals manifest `[run] name`)."
+
+[[key]]
+path = "formats_note"
+type = "string"
+description = "Free text about the formats."
+
+[[key]]
+path = "toml"
+type = "array[string]"
+description = "TOML documents present in the run directory."
+
+[[key]]
+path = "viz"
+type = "array[string]"
+description = "Visual artefacts present (e.g. an HTML map)."
+
+[[key]]
+path = "tables"
+type = "array_of_tables"
+required = true
+description = "One entry per table written."
+
+[[key]]
+path = "tables[].name"
+type = "string"
+required = true
+description = "Table name (file stem)."
+
+[[key]]
+path = "tables[].formats"
+type = "array[string]"
+required = true
+min_items = 1
+description = "Formats present on disk: any of `parquet`, `arrow`, `csv`."
+
+[[key]]
+path = "tables[].nrows"
+type = "int"
+required = true
+min = 0
+description = "Data rows (header excluded)."
+
+[[key]]
+path = "tables[].columns"
+type = "array[string]"
+required = true
+description = "Column names, in file order."
+
+[[key]]
+path = "tables[].family"
+type = "string"
+description = "Table family (e.g. `price`, `dispatch`, `investment`, `flow`, `audit`)."
+
+[[key]]
+path = "tables[].grain"
+type = "string"
+description = "One row per … (e.g. `bus-period`)."
+
+[[key]]
+path = "tables[].description"
+type = "string"
+description = "One-line description."
+
+[[key]]
+path = "tables[].measures"
+type = "array[string]"
+description = "The value columns."
+
+[[key]]
+path = "tables[].provenance"
+type = "table"
+open = true
+description = "Free-form provenance of the table (string, number or boolean values)."

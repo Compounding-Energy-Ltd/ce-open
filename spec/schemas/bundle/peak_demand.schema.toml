@@ -1,0 +1,37 @@
+# CE data format 1.0 — bundle table `peak_demand`.
+
+[table]
+name = "peak_demand"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "bus-year"
+primary_key = ["bus", "year"]
+description = """
+The peak demand a planning reserve margin is measured against, per bus and investment year. Absent = the
+maximum of the `demand` series."""
+
+[[column]]
+name = "bus"
+type = "int32"
+required = true
+description = "Bus (`buses.id`)."
+
+[[column]]
+name = "year"
+type = "int16"
+required = true
+unit = "year"
+description = "Investment year."
+
+[[column]]
+name = "mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+description = "Peak demand."
+
+[[foreign_key]]
+column = "bus"
+references = "buses.id"

@@ -1,0 +1,237 @@
+# CE data format 1.0 — bundle table `candidates`.
+
+[table]
+name = "candidates"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "candidate"
+primary_key = ["candidate_id"]
+description = """
+Build options: the capacity a model MAY add, where, and at what cost. The model chooses how much of
+`max_mw` to build (0 is always allowed). Capital cost is given either annualised (`capex_per_mw_yr`) or
+overnight (`capex_overnight_per_mw`) together with a capital recovery factor's inputs; see SPEC.md §5.3.
+Renewable and hybrid candidates need an `availability` series keyed by `candidate_id`."""
+
+[[column]]
+name = "candidate_id"
+type = "string"
+required = true
+description = "Candidate identifier, unique within the table and distinct from every `generators.name`. Keys `availability.site_name` and the results' component names."
+
+[[column]]
+name = "technology"
+type = "string"
+required = true
+description = "Technology code (open vocabulary; see SPEC.md §6.4)."
+
+[[column]]
+name = "kind"
+type = "string"
+required = true
+enum = ["thermal", "renewable", "storage", "hybrid"]
+description = "Build model: `thermal`, `renewable` (availability-bounded), `storage`, or `hybrid` (a renewable part and a storage part behind one point of interconnection)."
+
+[[column]]
+name = "bus"
+type = "int32"
+required = true
+description = "Connection bus (`buses.id`)."
+
+[[column]]
+name = "max_mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+min_exclusive = true
+description = "Largest buildable capacity. For a hybrid, the point-of-interconnection export limit."
+
+[[column]]
+name = "capex_per_mw_yr"
+type = "float64"
+unit = "currency/MW-yr"
+min = 0.0
+description = "Annualised capital cost per MW built. Takes precedence over the overnight form when both are given."
+
+[[column]]
+name = "capex_overnight_per_mw"
+type = "float64"
+unit = "currency/MW"
+min = 0.0
+description = "Overnight capital cost per MW built. Needs a capital recovery factor (row `annualisation_rate` + `lifetime_years`, or the bundle's `[money]` defaults)."
+
+[[column]]
+name = "annualisation_rate"
+type = "float64"
+unit = "fraction/yr"
+min = 0.0
+max = 1.0
+description = "Real discount rate r of the capital recovery factor CRF = r(1+r)^n / ((1+r)^n − 1)."
+
+[[column]]
+name = "lifetime_years"
+type = "float64"
+unit = "year"
+min = 0.0
+min_exclusive = true
+description = "Economic life n of the capital recovery factor."
+
+[[column]]
+name = "fom_per_mw_yr"
+type = "float64"
+unit = "currency/MW-yr"
+min = 0.0
+default = 0.0
+description = "Fixed O&M cost per MW built."
+
+[[column]]
+name = "varcost_per_mwh"
+type = "float64"
+unit = "currency/MWh"
+default = 0.0
+description = "Variable cost of energy. May be negative where a production credit applies."
+
+[[column]]
+name = "interconnection_cost_per_kw"
+type = "float64"
+unit = "currency/kW"
+min = 0.0
+default = 0.0
+description = "Overnight network-connection cost per kW built; annualised with the same capital recovery factor as the overnight capex."
+
+[[column]]
+name = "lead_time_years"
+type = "int16"
+unit = "year"
+min = 0
+description = "Construction lead time: the earliest in-service year is the first investment year plus this."
+
+[[column]]
+name = "duration_h"
+type = "float64"
+unit = "h"
+min = 0.0
+min_exclusive = true
+description = "Storage energy-to-power ratio (storage and hybrid rows; required there unless `max_mwh` sizes the energy separately)."
+
+[[column]]
+name = "max_mwh"
+type = "float64"
+unit = "MWh"
+min = 0.0
+description = "Largest buildable energy capacity when energy is sized independently of power (storage rows). Null = energy fixed by `duration_h`."
+
+[[column]]
+name = "capex_per_mwh_yr"
+type = "float64"
+unit = "currency/MWh-yr"
+min = 0.0
+default = 0.0
+description = "Annualised capital cost per MWh of independently sized energy capacity."
+
+[[column]]
+name = "generation_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+description = "Hybrid rows: largest buildable renewable (generating) part. Required on hybrid rows."
+
+[[column]]
+name = "storage_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+description = "Hybrid rows: largest buildable storage part. Required on hybrid rows."
+
+[[column]]
+name = "co2_t_per_mwh"
+type = "float64"
+unit = "tCO2/MWh"
+min = 0.0
+default = 0.0
+description = "Direct CO2 emission intensity of output (thermal rows)."
+
+[[column]]
+name = "firm_capacity_frac"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+description = "Capacity credit toward the planning reserve margin."
+
+[[column]]
+name = "integer_build"
+type = "bool"
+default = false
+description = "True when the candidate is built in whole units of `unit_size_mw`."
+
+[[column]]
+name = "unit_size_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+min_exclusive = true
+description = "Unit size for integer builds. Required when `integer_build` is true."
+
+[[column]]
+name = "cf_mean"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+description = "Mean capacity factor of the availability series. Informational; never used in place of the series."
+
+[[column]]
+name = "lat"
+type = "float64"
+unit = "degree"
+min = -90.0
+max = 90.0
+description = "Latitude of the site, WGS 84."
+
+[[column]]
+name = "lon"
+type = "float64"
+unit = "degree"
+min = -180.0
+max = 180.0
+description = "Longitude of the site, WGS 84."
+
+[[foreign_key]]
+column = "bus"
+references = "buses.id"
+
+[[alias]]
+legacy = "site_id"
+canonical = "candidate_id"
+
+[[alias]]
+legacy = "bus_id"
+canonical = "bus"
+
+[[alias]]
+legacy = "capex_per_mw_annualised"
+canonical = "capex_per_mw_yr"
+
+[[alias]]
+legacy = "fom_gbp_per_mw"
+canonical = "fom_per_mw_yr"
+
+[[alias]]
+legacy = "varcost_gbp_per_mwh"
+canonical = "varcost_per_mwh"
+
+[[alias]]
+legacy = "interconnection_gbp_per_kw"
+canonical = "interconnection_cost_per_kw"
+
+# Historical cost columns whose names do not say whether the cost is annualised or overnight. In CE's own
+# history the same spelling has held both, so it is refused rather than guessed (SPEC.md §3.5).
+[[refused_spelling]]
+legacy = "capex_gbp_per_mw"
+reason = "rename it to capex_per_mw_yr if the values are annualised (per MW per year) or to capex_overnight_per_mw if they are overnight (per MW, one-off)"
+
+[[refused_spelling]]
+legacy = "capex_gbp_per_mwh"
+reason = "rename it to capex_per_mwh_yr if the values are annualised (per MWh of energy capacity per year); the format has no overnight energy-capacity cost column, so annualise an overnight value first (SPEC.md §5.3)"

@@ -1,0 +1,5 @@
+candidate_id,technology,kind,bus,max_mw,capex_per_mw_yr,capex_overnight_per_mw,fom_per_mw_yr,varcost_per_mwh,lead_time_years,duration_h,generation_mw,storage_mw,co2_t_per_mwh,firm_capacity_frac,integer_build,unit_size_mw,cf_mean,lat,lon
+solar_south_c1,solar_pv,renewable,2,500,60000,,15000,0,1,,,,0,0.3,false,,0.24,9.55,20.15
+hybrid_coast_c1,solar_pv_battery,hybrid,3,300,,1200000,25000,0,2,4,300,150,0,0.5,false,,0.23,9.82,20.55
+battery_coast_c1,battery,storage,3,200,50000,,10000,2,1,4,,,0,0.5,false,,,9.81,20.58
+ocgt_south_c1,gas_ct,thermal,2,400,70000,,8000,95,3,,,,0.55,0.95,true,100,,9.62,20.12

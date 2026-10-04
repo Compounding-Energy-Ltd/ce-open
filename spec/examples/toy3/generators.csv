@@ -1,0 +1,4 @@
+id,name,bus,technology,kind,existing_mw,varcost_per_mwh,fom_per_mw_yr,pmin_frac,ramp_frac_per_h,co2_t_per_mwh,firm_capacity_frac,retirable,retirement_year
+1,ccgt_north,1,gas_cc,thermal,600,45,14000,0.4,0.5,0.37,0.95,false,
+2,peaker_south,2,gas_ct,thermal,150,120,9000,0.2,1,0.55,0.95,true,
+3,wind_north,1,wind_onshore,renewable,300,0,30000,,,0,0.12,false,

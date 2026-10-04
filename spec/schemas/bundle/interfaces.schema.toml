@@ -1,0 +1,63 @@
+# CE data format 1.0 — bundle table `interfaces`.
+
+[table]
+name = "interfaces"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "interface-line"
+primary_key = ["interface_id", "line_id"]
+description = """
+Transfer limits on groups of lines (paths, flowgates, cut-sets). One row per (interface, member line).
+The interface flow is Σ orientation × flow over its member lines, and is held within
+[−max_rev_mw, max_fwd_mw]. `name`, `max_fwd_mw`, `max_rev_mw` and `source` must be identical on every row
+of one interface."""
+
+[[column]]
+name = "interface_id"
+type = "int32"
+required = true
+min = 1
+description = "Interface identifier."
+
+[[column]]
+name = "name"
+type = "string"
+required = true
+description = "Interface name."
+
+[[column]]
+name = "line_id"
+type = "int32"
+required = true
+description = "Member line (`lines.id`)."
+
+[[column]]
+name = "orientation"
+type = "int8"
+required = true
+enum = [1, -1]
+description = "+1 when the line's from→to direction is the interface's forward direction, −1 when it is the reverse."
+
+[[column]]
+name = "max_fwd_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+description = "Forward limit (a non-negative magnitude). Null = unbounded."
+
+[[column]]
+name = "max_rev_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+description = "Reverse limit (a non-negative magnitude). Null = unbounded."
+
+[[column]]
+name = "source"
+type = "string"
+description = "Where the limit comes from (free text, e.g. a published rating)."
+
+[[foreign_key]]
+column = "line_id"
+references = "lines.id"

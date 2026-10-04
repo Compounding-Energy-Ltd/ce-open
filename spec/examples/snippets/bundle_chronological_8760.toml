@@ -1,0 +1,41 @@
+# Example descriptor: a full hourly year (chronological), three weather years, one investment year.
+# Descriptor only — the tables are not part of this snippet. Every value is illustrative.
+
+[format]
+name = "ce-bundle"
+version = "1.0"
+
+[bundle]
+name = "example_hourly_year"
+description = "One chronological block covering a leap year hour by hour"
+created_utc = 2026-10-01T00:00:00Z
+license = "CC-BY-4.0"
+
+[money]
+currency = "EUR"
+dollar_year = 2025
+
+[time]
+timezone = "UTC"
+hour_convention = "hour_ending"
+investment_years = [2030]
+weather_years = [2012, 2016, 2020]   # an explicit list of labels, not a range
+leap_day = "keep"                    # so the 2024 calendar year below has 8784 hourly periods
+
+[[time.blocks]]
+id = 1
+name = "calendar_year"
+kind = "chronological"
+start = 2024-01-01T00:00:00Z         # period 1 = 00:00-01:00 UTC on 1 January, labelled hour-ending 01:00
+nperiods = 8784
+dt_h = 1.0
+weight_h = 8784.0                    # chronological: weight_h = sum of dt_h
+
+[system]
+voll_per_mwh = 10000.0
+planning_reserve_margin = 0.12
+discount_factors = [1.0]
+
+# Extensions are ignored by every reader and never refused:
+[x_example_vendor]
+note = "anything under an x_ section travels without breaking refusal-on-unknown"

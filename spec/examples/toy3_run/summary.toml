@@ -1,0 +1,28 @@
+# Synthetic summary (invented numbers).
+
+[cost]
+total = 475000000.0
+investment_capex = 125000000.0
+operational_opex = 350000000.0
+
+[solve]
+lower_bound = 473100000.0
+relative_gap = 0.004
+iterations = 12
+converged = true
+stop_cause = "gap"
+wall_s = 3.2
+mip_master = true
+
+[builds_mw_by_technology]
+solar_pv = 350.0
+battery = 100.0
+solar_pv_battery = 240.0
+
+[energy]
+demand_mwh = 8100000.0
+unserved_mwh = 0.0
+curtailed_mwh = 52000.0
+
+[emissions]
+co2_t = 1900000.0

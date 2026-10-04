@@ -1,0 +1,68 @@
+# CE data format 1.0 — bundle table `demand`.
+
+[table]
+name = "demand"
+scope = "bundle"
+required = true
+since = "1.0"
+grain = "bus-period"
+series = true
+series_id = "bus"
+series_value = "mw"
+primary_key = ["bus", "scenario", "block", "period", "year", "weather"]
+description = """
+Electricity demand per bus and period, in long format. The optional `year` column gives each investment
+year its own profile; the optional `weather` column (which needs `year`) gives several weather-year
+realisations per investment year. A table without `year` applies to every investment year; a table without
+`weather` applies to every weather year. Every series must be complete (SPEC.md §4.6)."""
+
+[[column]]
+name = "bus"
+type = "int32"
+required = true
+description = "Bus (`buses.id`)."
+
+[[column]]
+name = "scenario"
+type = "int16"
+required = true
+min = 1
+description = "Scenario index, 1-based, into `[scenarios] names` of bundle.toml."
+
+[[column]]
+name = "block"
+type = "int16"
+required = true
+min = 1
+description = "Time block id (`[[time.blocks]] id`)."
+
+[[column]]
+name = "period"
+type = "int32"
+required = true
+min = 1
+description = "Period within the block, 1-based (hour-ending: period 1 is the first interval)."
+
+[[column]]
+name = "mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+description = "Average withdrawal over the period."
+
+[[column]]
+name = "year"
+type = "int16"
+unit = "year"
+description = "Investment year (one of `[time] investment_years`). Absent = every investment year."
+
+[[column]]
+name = "weather"
+type = "int16"
+unit = "year"
+description = "Weather-year label (one of `[time] weather_years`). Needs `year`. Absent = every weather year."
+
+[[foreign_key]]
+column = "bus"
+references = "buses.id"

@@ -1,0 +1,78 @@
+# CE data format 1.0 — results table `investment`.
+
+[table]
+name = "investment"
+scope = "results"
+required = true
+since = "1.0"
+grain = "component-year"
+family = "investment"
+primary_key = ["year", "component", "name"]
+description = """
+Capacity the run decided, per component and investment year. Values are CUMULATIVE: the new capacity in
+service in that year (not the increment since the previous year). Retirements of existing capacity are
+rows with `component = "retirement"` and a NEGATIVE `built_mw` (cumulative capacity removed). Storage
+energy sized independently of power is a `storage_energy` row carrying `built_mwh`. A built hybrid
+candidate is one row per part under its `candidate_id` — `renewable` (renewable part), `storage` (storage
+power) and, only when energy is sized independently, `storage_energy` (SPEC.md §9.4). Components with
+nothing built in a year may be omitted."""
+
+[[column]]
+name = "year"
+type = "int16"
+required = true
+unit = "year"
+description = "Investment year."
+
+[[column]]
+name = "component"
+type = "string"
+required = true
+enum = ["thermal", "renewable", "storage", "storage_energy", "hvdc", "ac_line", "retirement"]
+description = "What was built (or retired)."
+
+[[column]]
+name = "id"
+type = "int32"
+description = "The component's integer id in the input bundle (informational; may be null for built-in-run components)."
+
+[[column]]
+name = "name"
+type = "string"
+required = true
+description = "The component's name: a `candidates.candidate_id`, `generators.name` (retirements), `lines.name` or `hvdc.name`."
+
+[[column]]
+name = "technology"
+type = "string"
+required = true
+description = "Technology code (`ac_line` / `hvdc` for network rows)."
+
+[[column]]
+name = "bus"
+type = "string"
+required = true
+description = "Bus name (`buses.name`); the sending-end bus for network rows."
+
+[[column]]
+name = "built_mw"
+type = "float64"
+unit = "MW"
+description = "Cumulative capacity built (≥ 0) or, on `retirement` rows, retired (≤ 0). Null on `storage_energy` rows."
+
+[[column]]
+name = "built_mwh"
+type = "float64"
+unit = "MWh"
+min = 0.0
+atol = 1e-6
+description = "Cumulative energy capacity built on `storage_energy` rows. Null elsewhere."
+
+[[column]]
+name = "bus_label"
+type = "string"
+description = "Display label of `bus` (echoes `bus` when the bundle has none)."
+
+[[alias]]
+legacy = "bus_name"
+canonical = "bus_label"

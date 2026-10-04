@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ce-studio"
+version = "0.1.0"
+description = "Typed Python client and CLI for the CE Scenario Studio HTTP API"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Compounding Energy Ltd" }]
+keywords = ["energy", "power-systems", "capacity-expansion", "scenario", "api-client"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = []
+
+[project.optional-dependencies]
+parquet = ["pyarrow>=14"]
+dataframe = ["pandas>=2"]
+test = ["pytest>=7"]
+
+[project.scripts]
+ce-studio = "ce_studio.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ce_studio = ["data/*.toml", "py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

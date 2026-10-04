@@ -1,0 +1,34 @@
+# CE data format 1.0 — bundle table `weather_weights`.
+
+[table]
+name = "weather_weights"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "year-weather"
+primary_key = ["year", "weather"]
+description = """
+Relative weight of each weather-year realisation within an investment year. Readers normalise the weights
+of one investment year to sum to 1. Absent table, or an absent (year, weather) pair = weight 1 (equal
+weighting)."""
+
+[[column]]
+name = "year"
+type = "int16"
+required = true
+unit = "year"
+description = "Investment year."
+
+[[column]]
+name = "weather"
+type = "int16"
+required = true
+unit = "year"
+description = "Weather-year label."
+
+[[column]]
+name = "weight"
+type = "float64"
+required = true
+min = 0.0
+description = "Relative weight (non-negative; normalised per investment year)."

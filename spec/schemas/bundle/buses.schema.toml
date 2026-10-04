@@ -1,0 +1,89 @@
+# CE data format 1.0 — bundle table `buses`.
+# Machine-readable schema; TABLES.md is rendered from these files (python -m ce_spec render-docs).
+
+[table]
+name = "buses"
+scope = "bundle"
+required = true
+since = "1.0"
+grain = "bus"
+primary_key = ["id"]
+unique = [["name"]]
+description = """
+The electrical nodes of the network. Every component table references a bus by its integer `id`;
+result tables reference a bus by its `name`."""
+
+[[column]]
+name = "id"
+type = "int32"
+required = true
+min = 1
+description = "Bus identifier, unique within the bundle. Integer ids are load-order keys and may be re-assigned when a bundle is rebuilt; join across bundles by `name`."
+
+[[column]]
+name = "name"
+type = "string"
+required = true
+description = "Stable bus name, unique within the bundle. The key result tables use (`bus` columns in results hold this value)."
+
+[[column]]
+name = "zone"
+type = "string"
+default = "default"
+description = "Zone (balancing area, price zone or reporting region) the bus belongs to."
+
+[[column]]
+name = "lat"
+type = "float64"
+unit = "degree"
+min = -90.0
+max = 90.0
+description = "Latitude, WGS 84."
+
+[[column]]
+name = "lon"
+type = "float64"
+unit = "degree"
+min = -180.0
+max = 180.0
+description = "Longitude, WGS 84."
+
+[[column]]
+name = "voltage_kv"
+type = "float64"
+unit = "kV"
+min = 0.0
+min_exclusive = true
+description = "Nominal voltage of the bus."
+
+[[column]]
+name = "label"
+type = "string"
+description = "Human-readable display name (e.g. a substation name). Never used as a key."
+
+[[column]]
+name = "hosting_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+description = "Hosting limit: the most NEW injection capacity that may connect at the bus. Null = no limit."
+
+[[column]]
+name = "hosting_expandable"
+type = "bool"
+default = false
+description = "True when the hosting limit may be raised at a cost (`hosting_expand_cost_per_mw_yr`)."
+
+[[column]]
+name = "hosting_expand_cost_per_mw_yr"
+type = "float64"
+unit = "currency/MW-yr"
+min = 0.0
+description = "Annualised cost of raising the hosting limit by 1 MW. Required when `hosting_expandable` is true."
+
+[[column]]
+name = "hosting_expand_max_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+description = "Largest permitted expansion of the hosting limit. Null = unbounded."

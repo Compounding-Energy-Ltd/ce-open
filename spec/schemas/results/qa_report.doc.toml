@@ -1,0 +1,77 @@
+# CE data format 1.0 — the run quality report `qa_report.toml`.
+
+[document]
+name = "qa_report.toml"
+scope = "results"
+required = false
+since = "1.0"
+description = "Overall quality status of a run, derived from the `qa_checks` table (SPEC.md §9.6)."
+
+[[key]]
+path = "qa"
+type = "table"
+required = true
+description = "Status block."
+
+[[key]]
+path = "qa.status"
+type = "string"
+required = true
+enum = ["PASS", "INCOMPLETE", "WARN", "FAIL"]
+description = "FAIL if any check FAILs; else WARN if any WARNs; else INCOMPLETE if any required check is NA; else PASS."
+
+[[key]]
+path = "qa.n_pass"
+type = "int"
+required = true
+min = 0
+description = "Checks with status PASS."
+
+[[key]]
+path = "qa.n_warn"
+type = "int"
+required = true
+min = 0
+description = "Checks with status WARN."
+
+[[key]]
+path = "qa.n_fail"
+type = "int"
+required = true
+min = 0
+description = "Checks with status FAIL."
+
+[[key]]
+path = "qa.n_na"
+type = "int"
+required = true
+min = 0
+description = "Checks with status NA."
+
+[[key]]
+path = "qa.n_required_na"
+type = "int"
+required = true
+min = 0
+description = "Required checks with status NA."
+
+[[key]]
+path = "qa.failing"
+type = "array[string]"
+description = "`check:STATUS` (with `@year` when per-year) of every FAIL, WARN and required NA."
+
+[[key]]
+path = "qa.table"
+type = "string"
+description = "File name of the checks table (e.g. `qa_checks.csv`)."
+
+[[key]]
+path = "tolerances"
+type = "table"
+description = "The tolerances the checks used, by name."
+
+[[key]]
+path = "tolerances.*"
+type = "float"
+min = 0.0
+description = "A tolerance."

@@ -1,0 +1,10 @@
+# Example provenance sidecar (SPEC.md section 7). Comments start with '#'; there are no inline comments.
+source=synthetic example for the specification
+license=Apache-2.0
+built_utc=2026-10-01T00:00:00Z
+tool=example_writer
+tool_version=0.1
+generation=example-build-7
+rows=42
+sha256=9f2c4e6a8b0d1f3e5a7c9b1d3f5e7a9c0b2d4f6e8a1c3e5b7d9f0a2c4e6b8d0f
+notes = "  quoted, so the leading blanks are kept  "

@@ -1,0 +1,8 @@
+source=ce_spec.toy synthetic construction
+license=Apache-2.0
+built_utc=2026-10-01T00:00:00Z
+tool=ce_spec.toy
+derived_from=candidates.csv
+source_generation=toy3-g1
+rows=1152
+sha256=663349ee7757618dbf7974f6f479b611daac146f36b937db40b11f707a78d9e0

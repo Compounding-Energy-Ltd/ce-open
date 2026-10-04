@@ -1,0 +1,47 @@
+# Synthetic results for the toy3 bundle. NOT the output of a solve: every number is invented.
+
+[format]
+name = "ce-results"
+version = "1.0"
+
+[run]
+name = "toy3_synthetic"
+created_utc = 2026-10-01T00:00:00Z
+engine = "ce_spec.toy (synthetic, not a solve)"
+engine_version = "1.0"
+mode = "cem"
+
+[money]
+currency = "USD"
+dollar_year = 2024
+
+[time]
+timezone = "UTC"
+hour_convention = "hour_ending"
+investment_years = [2030, 2035]
+weather_years = [2018, 2019]
+weather_axis = "label"
+
+[[time.blocks]]
+id = 1
+name = "winter_day"
+kind = "representative"
+nperiods = 24
+dt_h = 1.0
+weight_h = 4380.0
+
+[[time.blocks]]
+id = 2
+name = "summer_day"
+kind = "representative"
+nperiods = 24
+dt_h = 1.0
+weight_h = 4380.0
+
+[scenarios]
+names = ["central", "high_demand"]
+probability = [0.7, 0.3]
+
+[inputs]
+bundle_name = "toy3"
+bundle_format_version = "1.0"

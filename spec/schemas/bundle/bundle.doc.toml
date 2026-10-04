@@ -1,0 +1,259 @@
+# CE data format 1.0 — the bundle descriptor `bundle.toml`.
+# Each [[key]] names a dotted path. `name[]` marks the elements of an array of tables; `*` matches any
+# single key (a free-form map). A key whose segment starts with `x_` is an extension and is never checked.
+
+[document]
+name = "bundle.toml"
+scope = "bundle"
+required = true
+since = "1.0"
+description = "The bundle descriptor: format version, money, time axis, scenarios and system-wide parameters."
+
+[[key]]
+path = "format"
+type = "table"
+required = true
+description = "Format identity."
+
+[[key]]
+path = "format.name"
+type = "string"
+required = true
+enum = ["ce-bundle"]
+description = "Always `ce-bundle`."
+
+[[key]]
+path = "format.version"
+type = "string"
+required = true
+description = "`MAJOR.MINOR` of this specification the bundle was written against (e.g. `1.0`)."
+
+[[key]]
+path = "bundle"
+type = "table"
+required = true
+description = "Bundle identity."
+
+[[key]]
+path = "bundle.name"
+type = "string"
+required = true
+description = "Bundle name."
+
+[[key]]
+path = "bundle.description"
+type = "string"
+description = "Free-text description."
+
+[[key]]
+path = "bundle.created_utc"
+type = "datetime"
+description = "Creation instant, an offset date-time in UTC (e.g. `2026-10-01T12:00:00Z`)."
+
+[[key]]
+path = "bundle.license"
+type = "string"
+description = "SPDX licence identifier of the bundle's data (e.g. `CC-BY-4.0`)."
+
+[[key]]
+path = "bundle.source"
+type = "string"
+description = "Free-text statement of where the data comes from."
+
+[[key]]
+path = "money"
+type = "table"
+required = true
+description = "The denomination of EVERY monetary value in the bundle."
+
+[[key]]
+path = "money.currency"
+type = "string"
+required = true
+description = "ISO 4217 code, three upper-case letters (e.g. `USD`, `GBP`, `EUR`)."
+
+[[key]]
+path = "money.dollar_year"
+type = "int"
+required = true
+min = 1900
+max = 2200
+description = "The constant-money (real) year every monetary value is expressed in."
+
+[[key]]
+path = "money.default_annualisation_rate"
+type = "float"
+min = 0.0
+max = 1.0
+description = "Real discount rate used to annualise overnight costs on rows that give none."
+
+[[key]]
+path = "money.default_lifetime_years"
+type = "float"
+min = 0.0
+min_exclusive = true
+description = "Economic life used to annualise overnight costs on rows that give none."
+
+[[key]]
+path = "money.converted_from"
+type = "string"
+description = "When the bundle was converted from another currency: the source ISO 4217 code."
+
+[[key]]
+path = "money.conversion_rate"
+type = "float"
+min = 0.0
+min_exclusive = true
+description = "Target units per source unit applied to every monetary value."
+
+[[key]]
+path = "money.conversion_source"
+type = "string"
+description = "Where the conversion rate comes from."
+
+[[key]]
+path = "time"
+type = "table"
+required = true
+description = "The time axis."
+
+[[key]]
+path = "time.timezone"
+type = "string"
+required = true
+enum = ["UTC"]
+description = "Always `UTC` in 1.0. Local time is a presentation concern."
+
+[[key]]
+path = "time.hour_convention"
+type = "string"
+required = true
+enum = ["hour_ending"]
+description = "Always `hour_ending` in 1.0: period p covers [start + (p−1)·dt, start + p·dt)."
+
+[[key]]
+path = "time.investment_years"
+type = "array[int]"
+required = true
+min_items = 1
+description = "Investment (planning) years, strictly increasing."
+
+[[key]]
+path = "time.weather_years"
+type = "array[int]"
+description = "Weather-year labels the series may carry, as an explicit list (not a range)."
+
+[[key]]
+path = "time.leap_day"
+type = "string"
+enum = ["keep", "drop"]
+default = "keep"
+description = "`keep`: a chronological full year on a leap year has 8784 hourly periods. `drop`: 29 February is removed, every year has 8760."
+
+[[key]]
+path = "time.blocks"
+type = "array_of_tables"
+required = true
+min_items = 1
+description = "The time blocks every series is cut into (chronological or representative)."
+
+[[key]]
+path = "time.blocks[].id"
+type = "int"
+required = true
+min = 1
+description = "Block id; ids are 1..B in order."
+
+[[key]]
+path = "time.blocks[].nperiods"
+type = "int"
+required = true
+min = 1
+description = "Number of periods in the block."
+
+[[key]]
+path = "time.blocks[].dt_h"
+type = ["float", "array[float]"]
+required = true
+description = "Period length in hours: one value for all periods, or one per period (length nperiods)."
+
+[[key]]
+path = "time.blocks[].weight_h"
+type = "float"
+required = true
+min = 0.0
+min_exclusive = true
+description = "Hours of the year the block stands for. A chronological block has weight_h = Σ dt_h."
+
+[[key]]
+path = "time.blocks[].kind"
+type = "string"
+required = true
+enum = ["chronological", "representative"]
+description = "`chronological`: real contiguous time from `start`. `representative`: a sample standing for `weight_h` hours."
+
+[[key]]
+path = "time.blocks[].start"
+type = "datetime"
+description = "Start instant of period 1 (UTC offset date-time). Required for chronological blocks."
+
+[[key]]
+path = "time.blocks[].name"
+type = "string"
+description = "Display name (e.g. `winter_peak_day`)."
+
+[[key]]
+path = "scenarios"
+type = "table"
+description = "Scenario set (absent = one scenario `base` with probability 1)."
+
+[[key]]
+path = "scenarios.names"
+type = "array[string]"
+required = true
+min_items = 1
+description = "Scenario names; the `scenario` column of a series is the 1-based index into this list."
+
+[[key]]
+path = "scenarios.probability"
+type = "array[float]"
+required = true
+min_items = 1
+description = "Scenario probabilities, same length as `names`, summing to 1."
+
+[[key]]
+path = "system"
+type = "table"
+description = "System-wide parameters."
+
+[[key]]
+path = "system.voll_per_mwh"
+type = "float"
+min = 0.0
+min_exclusive = true
+description = "Value of lost load: the price of unserved energy (currency/MWh)."
+
+[[key]]
+path = "system.planning_reserve_margin"
+type = "float"
+min = 0.0
+description = "Planning reserve margin as a fraction of peak demand."
+
+[[key]]
+path = "system.discount_factors"
+type = "array[float]"
+description = "One present-value factor per investment year (same length as `investment_years`)."
+
+[[key]]
+path = "system.co2_price_per_t"
+type = "float"
+min = 0.0
+description = "Carbon price applied to direct emissions (currency/tCO2)."
+
+[[alias]]
+legacy = "system.voll_gbp_per_mwh"
+canonical = "system.voll_per_mwh"
+
+[[alias]]
+legacy = "system.prm"
+canonical = "system.planning_reserve_margin"

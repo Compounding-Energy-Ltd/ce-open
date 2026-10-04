@@ -1,0 +1,6 @@
+check,family,status,value,tolerance,unit,worst_where,count,population,year,scope,source,note,required
+balance_resum,balance,PASS,2e-7,0.001,MW,,0,1152,0,,synthetic,,true
+flow_limits,flows,PASS,0,0.0001,MW,,0,1152,0,,synthetic,,true
+cost_reconciliation,cost,PASS,1e-9,0.000001,relative,,0,1,0,,synthetic,,true
+adequacy_reserve_margin,adequacy,PASS,0.18,0.15,fraction,,0,2,0,,synthetic,,true
+seasonal_soc_chain,storage,NA,,0.01,MWh,,0,0,0,,synthetic,no seasonal storage in this run: nothing to check,false

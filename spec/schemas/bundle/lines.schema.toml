@@ -1,0 +1,132 @@
+# CE data format 1.0 — bundle table `lines`.
+
+[table]
+name = "lines"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "line"
+primary_key = ["id"]
+unique = [["name"]]
+description = """
+AC branches (lines and transformers) under the DC power-flow approximation. A positive flow runs from
+`from_bus` to `to_bus`. A row may be existing, a build candidate, or both (an existing line that can be
+reinforced by `delta_rating_mw`)."""
+
+[[column]]
+name = "id"
+type = "int32"
+required = true
+min = 1
+description = "Line identifier, unique within the bundle."
+
+[[column]]
+name = "name"
+type = "string"
+required = true
+description = "Stable line name, unique within the bundle. The key result tables use (`line` columns in results hold this value)."
+
+[[column]]
+name = "from_bus"
+type = "int32"
+required = true
+description = "Sending-end bus (`buses.id`). Defines the positive flow direction."
+
+[[column]]
+name = "to_bus"
+type = "int32"
+required = true
+description = "Receiving-end bus (`buses.id`). Must differ from `from_bus`."
+
+[[column]]
+name = "susceptance_pu"
+type = "float64"
+required = true
+unit = "p.u. (100 MVA base)"
+min = 0.0
+min_exclusive = true
+description = "Series susceptance magnitude b = 1/x on a 100 MVA base."
+
+[[column]]
+name = "rating_mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+min_exclusive = true
+description = "Thermal rating (both directions). For a greenfield candidate, the rating once built."
+
+[[column]]
+name = "existing"
+type = "bool"
+default = true
+description = "True when the line is in service at the start of the horizon."
+
+[[column]]
+name = "candidate"
+type = "bool"
+default = false
+description = "True when the model may build (or reinforce) the line."
+
+[[column]]
+name = "delta_rating_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+default = 0.0
+description = "Capacity added by building the candidate on an existing line (a reinforcement). 0 on a greenfield candidate, whose built capacity is `rating_mw`."
+
+[[column]]
+name = "capex_per_yr"
+type = "float64"
+unit = "currency/yr"
+min = 0.0
+default = 0.0
+description = "Annualised cost of building the candidate (whole line, not per MW)."
+
+[[column]]
+name = "loss_frac"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+max_exclusive = true
+default = 0.0
+description = "Loss coefficient ℓ: the reference loss model is linear, loss(f) = ℓ·|f| MW; a quadratic model must give the same loss at rated flow, loss(f) = ℓ·f²/rating_mw (SPEC.md §8.3). 0 = lossless."
+
+[[column]]
+name = "contingency"
+type = "bool"
+default = false
+description = "True when the line's outage is a monitored N-1 contingency."
+
+[[column]]
+name = "length_km"
+type = "float64"
+unit = "km"
+min = 0.0
+description = "Route length. Informational."
+
+[[column]]
+name = "lead_time_years"
+type = "int16"
+unit = "year"
+min = 0
+description = "Construction lead time of the candidate: the earliest in-service year is the first investment year plus this."
+
+[[column]]
+name = "label"
+type = "string"
+description = "Human-readable display name. Never used as a key."
+
+[[foreign_key]]
+column = "from_bus"
+references = "buses.id"
+
+[[foreign_key]]
+column = "to_bus"
+references = "buses.id"
+
+[[alias]]
+legacy = "capex_gbp"
+canonical = "capex_per_yr"

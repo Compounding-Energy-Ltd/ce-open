@@ -1,0 +1,65 @@
+# CE data format 1.0 — bundle table `availability`.
+
+[table]
+name = "availability"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "site-period"
+series = true
+series_id = "site_name"
+series_value = "cf"
+primary_key = ["site_name", "scenario", "block", "period", "year", "weather"]
+description = """
+Per-period availability (capacity factor) of every availability-bounded resource: renewable generators
+and renewable / hybrid candidates. Output in a period is at most capacity × cf. Same axis and completeness
+rules as `demand`. Sites are keyed by NAME, never by integer id, so a table survives an id re-assignment."""
+
+[[column]]
+name = "site_name"
+type = "string"
+required = true
+description = "A `generators.name` (kind renewable) or a `candidates.candidate_id` (kind renewable or hybrid)."
+
+[[column]]
+name = "scenario"
+type = "int16"
+required = true
+min = 1
+description = "Scenario index, 1-based."
+
+[[column]]
+name = "block"
+type = "int16"
+required = true
+min = 1
+description = "Time block id."
+
+[[column]]
+name = "period"
+type = "int32"
+required = true
+min = 1
+description = "Period within the block, 1-based."
+
+[[column]]
+name = "cf"
+type = "float32"
+required = true
+unit = "fraction"
+min = 0.0
+max = 1.0
+atol = 1e-6
+description = "Available output as a fraction of installed capacity, averaged over the period."
+
+[[column]]
+name = "year"
+type = "int16"
+unit = "year"
+description = "Investment year. Absent = every investment year."
+
+[[column]]
+name = "weather"
+type = "int16"
+unit = "year"
+description = "Weather-year label. Needs `year`. Absent = every weather year."

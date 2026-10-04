@@ -1,0 +1,11 @@
+# synthetic sample case settings
+NetworkExpansion: 1
+Trans_Loss_Segments: 1
+UCommit: 2
+CO2Cap: 1
+CapacityReserveMargin: 1
+EnergyShareRequirement: 0
+MinCapReq: 0
+MaxCapReq: 0
+TimeDomainReduction: 0
+ParameterScale: 1

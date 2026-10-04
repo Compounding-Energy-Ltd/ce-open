@@ -1,0 +1,5 @@
+id,name,from_bus,to_bus,susceptance_pu,rating_mw,existing,candidate,delta_rating_mw,capex_per_yr,loss_frac,contingency,length_km,lead_time_years
+1,north_south,1,2,12,300,true,false,0,0,0.01,true,80,
+2,south_coast,2,3,8,200,true,true,200,1500000,0.015,false,60,2
+3,north_coast,1,3,6,150,true,false,0,0,0.02,false,120,
+4,north_coast_2,1,3,10,400,false,true,0,4000000,0.01,false,115,4

@@ -1,0 +1,62 @@
+# Copyright 2026 Compounding Energy Ltd
+# SPDX-License-Identifier: Apache-2.0
+#
+# Every component's tests on the newest supported Python and dependencies, and
+# again at the minimum versions the pyproject files declare. CE_OPEN_STRICT=1
+# turns a cross-component check that cannot import its sibling (spec/, results/,
+# converters/genx/) into a failure instead of a skip.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.name }} (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: latest
+            python: "3.13"
+            pins: ""
+            extras: "pypsa"
+          - name: minimum
+            python: "3.11"
+            # the floors declared in the pyproject files
+            pins: "numpy==1.24.* pandas==2.0.* pyarrow==14.* scipy==1.10.* highspy==1.7.* xarray==2023.1.*"
+            extras: ""
+    env:
+      CE_OPEN_STRICT: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install every component (editable) and the test tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest ${{ matrix.pins }} \
+            -e ./spec \
+            -e "./client[parquet,dataframe]" \
+            -e "./results[xarray,validate]" \
+            -e "./converters/genx[validate]" \
+            -e "./converters/pypsa[validate]" \
+            -e ./reference/papers
+      - name: Install PyPSA (latest only; its round-trip tests skip without it)
+        if: matrix.extras == 'pypsa'
+        run: python -m pip install pypsa
+      - name: Repository checks (licence headers, licence files, cross-component drift)
+        run: python -m pytest
+      - name: Component tests
+        run: |
+          for c in spec client results converters/genx converters/pypsa reference/papers; do
+            echo "::group::$c"
+            (cd "$c" && python -m pytest -q) || exit 1
+            echo "::endgroup::"
+          done

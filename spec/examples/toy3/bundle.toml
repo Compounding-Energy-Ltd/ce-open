@@ -1,0 +1,50 @@
+# Synthetic three-bus test bundle. Every number in this directory is invented.
+[format]
+name = "ce-bundle"
+version = "1.0"
+
+[bundle]
+name = "toy3"
+description = "Synthetic three-bus test system exercising every table of the CE data format"
+created_utc = 2026-10-01T00:00:00Z
+license = "Apache-2.0"
+source = "ce_spec.toy (deterministic synthetic construction)"
+
+[money]
+currency = "USD"
+dollar_year = 2024
+default_annualisation_rate = 0.07   # used for rows carrying overnight costs only
+default_lifetime_years = 25.0
+
+[time]
+timezone = "UTC"
+hour_convention = "hour_ending"
+investment_years = [2030, 2035]
+weather_years = [2018, 2019]
+leap_day = "keep"
+
+[[time.blocks]]
+id = 1
+name = "winter_day"
+kind = "representative"
+nperiods = 24
+dt_h = 1.0
+weight_h = 4380.0
+
+[[time.blocks]]
+id = 2
+name = "summer_day"
+kind = "representative"
+nperiods = 24
+dt_h = 1.0
+weight_h = 4380.0
+
+[scenarios]
+names = ["central", "high_demand"]
+probability = [0.7, 0.3]
+
+[system]
+voll_per_mwh = 9000.0
+planning_reserve_margin = 0.15
+discount_factors = [1.0, 0.713]
+co2_price_per_t = 50.0

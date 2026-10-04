@@ -1,0 +1,9 @@
+year,component,name,technology,bus,built_mw,built_mwh
+2030,renewable,solar_south_c1,solar_pv,south,200,
+2030,storage,battery_coast_c1,battery,coast,50,
+2035,renewable,solar_south_c1,solar_pv,south,350,
+2035,storage,battery_coast_c1,battery,coast,100,
+2035,ac_line,north_coast_2,ac_line,north,400,
+2035,retirement,peaker_south,gas_ct,south,-50,
+2035,renewable,hybrid_coast_c1,solar_pv_battery,coast,240,
+2035,storage,hybrid_coast_c1,solar_pv_battery,coast,120,

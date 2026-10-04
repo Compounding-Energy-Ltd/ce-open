@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ce-pypsa"
+version = "0.1.0"
+description = "Convert PyPSA networks to CE data-format bundles and back"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Compounding Energy Ltd" }]
+requires-python = ">=3.11"
+dependencies = ["pandas>=2.0", "numpy>=1.24", "pyarrow>=14"]
+
+[project.optional-dependencies]
+pypsa = ["pypsa>=0.25"]
+validate = ["ce-spec>=1.0"]   # the CE format validator (spec/ in this repository)
+test = ["pytest>=7"]
+
+[project.scripts]
+ce-pypsa = "ce_pypsa.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "tests"]
+testpaths = ["tests"]

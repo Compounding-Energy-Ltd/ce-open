@@ -1,0 +1,93 @@
+# CE data format 1.0 — results table `storage_state`.
+
+[table]
+name = "storage_state"
+scope = "results"
+required = false
+since = "1.0"
+grain = "storage-period"
+family = "dispatch"
+series = true
+primary_key = ["year", "scenario", "weather", "block", "period", "storage"]
+description = """
+Per-period state of charge of every storage unit, with its charge and discharge power (both non-negative).
+`soc_mwh` is the stored energy at the END of the period."""
+
+[[column]]
+name = "year"
+type = "int16"
+required = true
+unit = "year"
+description = "Investment year."
+
+[[column]]
+name = "scenario"
+type = "int16"
+required = true
+min = 1
+description = "Scenario index, 1-based."
+
+[[column]]
+name = "weather"
+type = "int16"
+required = true
+description = "Weather axis value (label or ordinal, per the manifest)."
+
+[[column]]
+name = "block"
+type = "int16"
+required = true
+min = 1
+description = "Time block id."
+
+[[column]]
+name = "period"
+type = "int32"
+required = true
+min = 1
+description = "Period within the block, 1-based, hour-ending."
+
+[[column]]
+name = "storage"
+type = "string"
+required = true
+description = "Storage name (`storage.name` or `candidates.candidate_id`)."
+
+[[column]]
+name = "technology"
+type = "string"
+required = true
+description = "Technology code."
+
+[[column]]
+name = "bus"
+type = "string"
+required = true
+description = "Bus name (`buses.name`)."
+
+[[column]]
+name = "soc_mwh"
+type = "float64"
+required = true
+unit = "MWh"
+min = 0.0
+atol = 1e-6
+description = "Stored energy at the end of the period."
+
+[[column]]
+name = "charge_mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+atol = 1e-6
+description = "Charging power (withdrawal)."
+
+[[column]]
+name = "discharge_mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+atol = 1e-6
+description = "Discharging power (injection)."

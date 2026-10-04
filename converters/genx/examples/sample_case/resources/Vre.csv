@@ -1,0 +1,4 @@
+Resource,Zone,New_Build,Can_Retire,Existing_Cap_MW,Max_Cap_MW,Inv_Cost_per_MWyr,Fixed_OM_Cost_per_MWyr,Num_VRE_Bins
+z1_solar_photovoltaic,1,1,1,50.0,-1.0,50000.0,15000.0,1
+z2_onshore_wind_turbine,2,1,1,200.0,1000.0,90000.0,40000.0,1
+z2_offshore_wind_turbine,2,1,1,0.0,500.0,150000.0,70000.0,1

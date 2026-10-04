@@ -1,0 +1,127 @@
+# CE data format 1.0 — bundle table `storage`.
+
+[table]
+name = "storage"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "unit"
+primary_key = ["id"]
+unique = [["name"]]
+description = """
+The EXISTING storage fleet (batteries, pumped hydro, ...). Storage build options live in `candidates`
+(`kind = "storage"`)."""
+
+[[column]]
+name = "id"
+type = "int32"
+required = true
+min = 1
+description = "Storage identifier, unique within the table."
+
+[[column]]
+name = "name"
+type = "string"
+required = true
+description = "Stable storage name, unique within the table."
+
+[[column]]
+name = "bus"
+type = "int32"
+required = true
+description = "Connection bus (`buses.id`)."
+
+[[column]]
+name = "technology"
+type = "string"
+default = "battery"
+description = "Technology code (e.g. `battery`, `pumped_hydro`)."
+
+[[column]]
+name = "existing_mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+description = "Installed power (charge and discharge) at the start of the horizon."
+
+[[column]]
+name = "duration_h"
+type = "float64"
+required = true
+unit = "h"
+min = 0.0
+min_exclusive = true
+description = "Energy-to-power ratio: usable energy capacity = existing_mw × duration_h."
+
+[[column]]
+name = "eta_charge"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+min_exclusive = true
+default = 0.95
+description = "Charging efficiency (grid MWh in → stored MWh)."
+
+[[column]]
+name = "eta_discharge"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+min_exclusive = true
+default = 0.95
+description = "Discharging efficiency (stored MWh → grid MWh out). Round-trip efficiency = eta_charge × eta_discharge."
+
+[[column]]
+name = "self_discharge_frac_per_h"
+type = "float64"
+unit = "fraction/h"
+min = 0.0
+max = 1.0
+max_exclusive = true
+default = 0.0
+description = "Fraction of the stored energy lost per hour."
+
+[[column]]
+name = "soc_init_frac"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+default = 0.5
+description = "State of charge at the start of each block, as a fraction of energy capacity (cyclic blocks end where they start)."
+
+[[column]]
+name = "dod_floor_frac"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+max_exclusive = true
+default = 0.0
+description = "Lowest permitted state of charge, as a fraction of energy capacity."
+
+[[column]]
+name = "varcost_per_mwh"
+type = "float64"
+unit = "currency/MWh"
+default = 0.0
+description = "Cost per MWh discharged (cycling cost)."
+
+[[column]]
+name = "firm_capacity_frac"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+description = "Capacity credit toward the planning reserve margin."
+
+[[foreign_key]]
+column = "bus"
+references = "buses.id"
+
+[[alias]]
+legacy = "varcost_gbp_per_mwh"
+canonical = "varcost_per_mwh"

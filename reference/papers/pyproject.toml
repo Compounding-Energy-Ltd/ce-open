@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ce-papers"
+version = "0.1.0"
+description = "Reference implementations for Compounding Energy working papers CE-WP-2026-03 and CE-WP-2026-04"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.11"
+authors = [{ name = "Compounding Energy Ltd" }]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "highspy>=1.7",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

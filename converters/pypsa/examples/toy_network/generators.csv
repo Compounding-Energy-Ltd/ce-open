@@ -1,0 +1,7 @@
+name,bus,carrier,p_nom,marginal_cost,efficiency,ramp_limit_up,ramp_limit_down,p_min_pu,p_nom_extendable,p_nom_max,capital_cost,p_nom_min
+South CCGT,South,gas,2000.0,70.0,0.55,0.6,0.6,,,,,
+South nuclear,South,nuclear,800.0,12.0,,,,0.5,,,,
+East OCGT,East,OCGT,0.0,130.0,0.38,,,,True,1500.0,45000.0,
+North onwind,North,onwind,2500.0,0.5,,,,,,,,
+Offshore wind,Offshore,offwind,1000.0,1.0,,,,,True,3000.0,160000.0,0.0
+East solar,East,solar,1200.0,0.0,,,,,True,,40000.0,

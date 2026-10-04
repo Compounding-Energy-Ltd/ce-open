@@ -1,0 +1,4 @@
+name,bus,carrier,p_nom,max_hours,efficiency_store,efficiency_dispatch,cyclic_state_of_charge,p_nom_extendable,p_nom_min,p_nom_max,capital_cost,p_min_pu
+East battery,East,battery,300.0,4.0,0.95,0.95,True,True,300.0,1500.0,55000.0,
+North PHS,North,PHS,400.0,8.0,0.87,0.87,True,,,,,
+North hydro,North,hydro,300.0,100.0,,0.9,True,,,,,0.0

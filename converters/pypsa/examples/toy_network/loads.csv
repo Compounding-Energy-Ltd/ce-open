@@ -1,0 +1,6 @@
+name,bus,p_set
+North load,North,
+South load,South,
+East homes,East,
+East industry,East,
+East H2 demand,East H2,50.0

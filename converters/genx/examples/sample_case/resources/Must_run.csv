@@ -1,0 +1,2 @@
+Resource,Zone,New_Build,Can_Retire,Existing_Cap_MW,Max_Cap_MW,Fixed_OM_Cost_per_MWyr
+z1_small_hydroelectric,1,0,0,10.0,-1.0,20000.0

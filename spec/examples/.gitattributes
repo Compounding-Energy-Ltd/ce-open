@@ -1,0 +1,2 @@
+# Keep example bytes exact: the .prov sidecars record each file's SHA-256.
+* -text

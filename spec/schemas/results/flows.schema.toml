@@ -1,0 +1,70 @@
+# CE data format 1.0 — results table `flows`.
+
+[table]
+name = "flows"
+scope = "results"
+required = false
+since = "1.0"
+grain = "line-period"
+family = "flow"
+series = true
+primary_key = ["year", "scenario", "weather", "block", "line", "period"]
+description = """
+Per-period power flow on every AC line and controllable corridor. SIGNED: positive = from the line's
+`from_bus` to its `to_bus` as declared in the input bundle; negative = the reverse."""
+
+[[column]]
+name = "year"
+type = "int16"
+required = true
+unit = "year"
+description = "Investment year."
+
+[[column]]
+name = "scenario"
+type = "int16"
+required = true
+min = 1
+description = "Scenario index, 1-based."
+
+[[column]]
+name = "weather"
+type = "int16"
+required = true
+description = "Weather axis value (label or ordinal, per the manifest)."
+
+[[column]]
+name = "block"
+type = "int16"
+required = true
+min = 1
+description = "Time block id."
+
+[[column]]
+name = "line"
+type = "string"
+required = true
+description = "Line or corridor name (`lines.name` / `hvdc.name`)."
+
+[[column]]
+name = "period"
+type = "int32"
+required = true
+min = 1
+description = "Period within the block, 1-based, hour-ending."
+
+[[column]]
+name = "flow_mw"
+type = "float64"
+required = true
+unit = "MW"
+description = "Average flow over the period, signed from→to."
+
+[[column]]
+name = "line_label"
+type = "string"
+description = "Display label of `line`."
+
+[[alias]]
+legacy = "line_name"
+canonical = "line_label"

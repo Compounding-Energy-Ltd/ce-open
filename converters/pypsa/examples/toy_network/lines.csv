@@ -1,0 +1,4 @@
+name,bus0,bus1,x,r,s_nom,s_nom_extendable,capital_cost,s_nom_min,s_nom_max,s_max_pu
+North-South,North,South,40.0,4.0,1500.0,False,0.0,,,
+South-East,South,East,20.0,2.0,800.0,True,30.0,0.0,2000.0,
+North-East,North,East,60.0,6.0,1000.0,False,0.0,,,0.7

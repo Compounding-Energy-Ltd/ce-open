@@ -1,0 +1,213 @@
+# CE data format 1.0 — the results descriptor `manifest.toml`.
+
+[document]
+name = "manifest.toml"
+scope = "results"
+required = true
+since = "1.0"
+description = "Run identity and the declarations every result table depends on: money, time axis, inputs."
+
+[[key]]
+path = "format"
+type = "table"
+required = true
+description = "Format identity."
+
+[[key]]
+path = "format.name"
+type = "string"
+required = true
+enum = ["ce-results"]
+description = "Always `ce-results`."
+
+[[key]]
+path = "format.version"
+type = "string"
+required = true
+description = "`MAJOR.MINOR` of this specification the run directory was written against."
+
+[[key]]
+path = "run"
+type = "table"
+required = true
+description = "Run identity."
+
+[[key]]
+path = "run.name"
+type = "string"
+required = true
+description = "Run name."
+
+[[key]]
+path = "run.created_utc"
+type = "datetime"
+description = "Instant the run finished writing, UTC offset date-time."
+
+[[key]]
+path = "run.engine"
+type = "string"
+description = "Name of the software that produced the results."
+
+[[key]]
+path = "run.engine_version"
+type = "string"
+description = "Its version."
+
+[[key]]
+path = "run.mode"
+type = "string"
+enum = ["cem", "pcm"]
+description = "`cem`: capacity expansion (investment decided). `pcm`: production cost (capacity fixed)."
+
+[[key]]
+path = "run.seed"
+type = "int"
+description = "Random seed, when the run used one."
+
+[[key]]
+path = "money"
+type = "table"
+required = true
+description = "Denomination of every monetary value in the run directory."
+
+[[key]]
+path = "money.currency"
+type = "string"
+required = true
+description = "ISO 4217 code. Must equal the input bundle's."
+
+[[key]]
+path = "money.dollar_year"
+type = "int"
+required = true
+min = 1900
+max = 2200
+description = "Constant-money year. Must equal the input bundle's."
+
+[[key]]
+path = "time"
+type = "table"
+required = true
+description = "Time axis of the result series."
+
+[[key]]
+path = "time.timezone"
+type = "string"
+required = true
+enum = ["UTC"]
+description = "Always `UTC`."
+
+[[key]]
+path = "time.hour_convention"
+type = "string"
+required = true
+enum = ["hour_ending"]
+description = "Always `hour_ending`."
+
+[[key]]
+path = "time.investment_years"
+type = "array[int]"
+required = true
+min_items = 1
+description = "Investment years of the run, strictly increasing."
+
+[[key]]
+path = "time.weather_years"
+type = "array[int]"
+description = "Weather-year labels of the run, in the order their ordinals count."
+
+[[key]]
+path = "time.weather_axis"
+type = "string"
+enum = ["label", "ordinal"]
+default = "label"
+description = "How the `weather` column of result series is spelled: `label` = the weather year itself; `ordinal` = its 1-based position in `weather_years`."
+
+[[key]]
+path = "time.blocks"
+type = "array_of_tables"
+description = "The block axis the series use (same keys as bundle.toml `[[time.blocks]]`). Recommended."
+
+[[key]]
+path = "time.blocks[].id"
+type = "int"
+required = true
+min = 1
+description = "Block id."
+
+[[key]]
+path = "time.blocks[].nperiods"
+type = "int"
+required = true
+min = 1
+description = "Number of periods."
+
+[[key]]
+path = "time.blocks[].dt_h"
+type = ["float", "array[float]"]
+required = true
+description = "Period length(s) in hours."
+
+[[key]]
+path = "time.blocks[].weight_h"
+type = "float"
+required = true
+min = 0.0
+min_exclusive = true
+description = "Hours of the year the block stands for."
+
+[[key]]
+path = "time.blocks[].kind"
+type = "string"
+required = true
+enum = ["chronological", "representative"]
+description = "Block kind."
+
+[[key]]
+path = "time.blocks[].start"
+type = "datetime"
+description = "Start of period 1 (chronological blocks)."
+
+[[key]]
+path = "time.blocks[].name"
+type = "string"
+description = "Display name."
+
+[[key]]
+path = "scenarios"
+type = "table"
+description = "Scenario set of the run (absent = one scenario)."
+
+[[key]]
+path = "scenarios.names"
+type = "array[string]"
+required = true
+min_items = 1
+description = "Scenario names; `scenario` columns index this list from 1."
+
+[[key]]
+path = "scenarios.probability"
+type = "array[float]"
+required = true
+min_items = 1
+description = "Scenario probabilities, summing to 1."
+
+[[key]]
+path = "inputs"
+type = "table"
+description = "What the run read."
+
+[[key]]
+path = "inputs.bundle_name"
+type = "string"
+description = "`[bundle] name` of the input bundle."
+
+[[key]]
+path = "inputs.bundle_format_version"
+type = "string"
+description = "`[format] version` of the input bundle."
+
+[[key]]
+path = "inputs.bundle_digest"
+type = "string"
+description = "A digest identifying the exact input bundle (e.g. `sha256:<hex>` over its files in name order)."

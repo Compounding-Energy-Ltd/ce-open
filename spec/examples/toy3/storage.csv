@@ -1,0 +1,2 @@
+id,name,bus,technology,existing_mw,duration_h,eta_charge,eta_discharge,soc_init_frac,firm_capacity_frac
+1,battery_south,2,battery,100,4,0.93,0.93,0.5,0.5

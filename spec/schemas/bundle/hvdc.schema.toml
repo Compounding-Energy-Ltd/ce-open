@@ -1,0 +1,93 @@
+# CE data format 1.0 — bundle table `hvdc`.
+
+[table]
+name = "hvdc"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "corridor"
+primary_key = ["id"]
+unique = [["name"]]
+description = """
+Controllable (HVDC) transfer corridors between two buses. Flow is a decision, bounded by the installed
+capacity in each direction; it does not obey the DC power-flow law."""
+
+[[column]]
+name = "id"
+type = "int32"
+required = true
+min = 1
+description = "Corridor identifier, unique within the bundle."
+
+[[column]]
+name = "name"
+type = "string"
+required = true
+description = "Stable corridor name, unique within the bundle."
+
+[[column]]
+name = "from_bus"
+type = "int32"
+required = true
+description = "Sending-end bus (`buses.id`); defines the positive direction."
+
+[[column]]
+name = "to_bus"
+type = "int32"
+required = true
+description = "Receiving-end bus (`buses.id`)."
+
+[[column]]
+name = "existing_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+default = 0.0
+description = "Capacity in service at the start of the horizon."
+
+[[column]]
+name = "candidate_max_mw"
+type = "float64"
+unit = "MW"
+min = 0.0
+default = 0.0
+description = "Largest capacity the model may add."
+
+[[column]]
+name = "converter_efficiency"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+min_exclusive = true
+default = 0.985
+description = "End-to-end converter efficiency applied to the transferred energy."
+
+[[column]]
+name = "capex_per_mw_yr"
+type = "float64"
+unit = "currency/MW-yr"
+min = 0.0
+default = 0.0
+description = "Annualised cost per MW of added capacity."
+
+[[column]]
+name = "lead_time_years"
+type = "int16"
+unit = "year"
+min = 0
+description = "Construction lead time of added capacity."
+
+[[foreign_key]]
+column = "from_bus"
+references = "buses.id"
+
+[[foreign_key]]
+column = "to_bus"
+references = "buses.id"
+
+# A historical cost column whose name does not say whether the cost is annualised or overnight: refused,
+# never guessed (SPEC.md §3.5).
+[[refused_spelling]]
+legacy = "capex_gbp_per_mw"
+reason = "rename it to capex_per_mw_yr after checking the values are annualised (per MW per year); annualise an overnight cost first (SPEC.md §5.3)"

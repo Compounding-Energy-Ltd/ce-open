@@ -1,0 +1,2 @@
+name,type,carrier_attribute,sense,constant
+CO2Limit,primary_energy,co2_emissions,<=,4000000.0

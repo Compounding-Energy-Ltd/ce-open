@@ -1,0 +1,608 @@
+# Copyright 2026 Compounding Energy Ltd
+# SPDX-License-Identifier: Apache-2.0
+#
+# The scenario-delta tables: every column the client accepts, its type, unit and
+# meaning, and the name the Studio's HTTP API uses for it on the wire.
+#
+# Column names follow the CE data format 1.0 (spec/SPEC.md) where it has one
+# (candidate_id, bus, capex_per_mw_yr, capex_overnight_per_mw, fom_per_mw_yr,
+# annualisation_rate, ...). The client renames each to its `wire` name when it
+# builds the JSON request body; a column without `wire` travels under its own
+# name. The service's own spelling of a column (its `wire` name) is accepted in
+# a file too, EXCEPT the overnight cost columns whose wire names do not say
+# "overnight" (listed under [[refused]]): those must be written under their
+# explicit name so an overnight cost is never mistaken for an annualised one.
+#
+# Types: string, int, float, bool, bus. A `bus` cell is a bus NAME from the
+# region (resolved to the region's integer id by the client at submit time) or
+# an integer id (digits only) valid for the region build named in
+# [scope] build. Money is in the region's currency and dollar year (see
+# `ce-studio scopes SCOPE_ID`). Overnight costs are annualised by the service
+# with the region's cost settings (or the row's annualisation_rate and
+# lifetime_years); annualised costs are used as given.
+
+version = 1
+
+# ------------------------------------------------------------------ add_candidates
+
+[table.add_candidates]
+description = "Build options drawn on the region. The solve chooses how much of max_mw to build (0 is always allowed)."
+
+[[table.add_candidates.column]]
+name = "candidate_id"
+wire = "site_id"
+type = "string"
+required = true
+description = "Identifier, unique within the table."
+
+[[table.add_candidates.column]]
+name = "name"
+type = "string"
+description = "Display name (defaults to candidate_id)."
+
+[[table.add_candidates.column]]
+name = "technology"
+type = "string"
+required = true
+description = "Technology code: one of the codes under [technology.to_wire] (CE format 1.0 codes) or the service's own codes."
+
+[[table.add_candidates.column]]
+name = "bus"
+wire = "bus_id"
+type = "bus"
+required = true
+description = "Connection bus: a bus name of the region, or its integer id."
+
+[[table.add_candidates.column]]
+name = "max_mw"
+type = "float"
+required = true
+unit = "MW"
+description = "Largest buildable capacity (0 < max_mw <= 100000). For a hybrid, the point-of-interconnection limit."
+
+[[table.add_candidates.column]]
+name = "lat"
+type = "float"
+unit = "degree"
+description = "Latitude of the site, WGS 84."
+
+[[table.add_candidates.column]]
+name = "lon"
+type = "float"
+unit = "degree"
+description = "Longitude of the site, WGS 84."
+
+[[table.add_candidates.column]]
+name = "in_service_year"
+type = "int"
+unit = "year"
+description = "First year the build may be in service."
+
+[[table.add_candidates.column]]
+name = "duration_h"
+type = "float"
+unit = "h"
+description = "Storage duration (energy = power x duration_h) for storage and hybrid rows."
+
+[[table.add_candidates.column]]
+name = "solar_mw"
+type = "float"
+unit = "MW"
+description = "Hybrid only: the largest solar part."
+
+[[table.add_candidates.column]]
+name = "storage_mw"
+type = "float"
+unit = "MW"
+description = "Hybrid only: the largest storage part (power)."
+
+[[table.add_candidates.column]]
+name = "storage_mwh"
+type = "float"
+unit = "MWh"
+description = "Storage energy sized independently of power (instead of duration_h)."
+
+[[table.add_candidates.column]]
+name = "hybrid_grid_charging"
+type = "bool"
+description = "Hybrid only: whether the storage part may charge from the grid."
+
+[[table.add_candidates.column]]
+name = "nameplate_mw"
+type = "float"
+unit = "MW"
+description = "Solar DC nameplate, when it differs from the AC rating."
+
+[[table.add_candidates.column]]
+name = "dcac_ratio"
+type = "float"
+description = "Solar DC/AC ratio (> 0)."
+
+[[table.add_candidates.column]]
+name = "curtailment_liquidation"
+type = "bool"
+description = "false = must-take output (generation equals availability); absent or true = curtailable."
+
+[[table.add_candidates.column]]
+name = "sizing_mode"
+type = "string"
+description = "optimize (default: the solve sizes the build) or exact (the size is pinned with a force_builds row)."
+
+[[table.add_candidates.column]]
+name = "tie_line_id"
+type = "string"
+description = "The add_lines row (a generator tie) this site connects through."
+
+[[table.add_candidates.column]]
+name = "interconnection_cost_per_kw"
+type = "float"
+unit = "currency/kW"
+description = "Overnight network-connection cost per kW built."
+
+[[table.add_candidates.column]]
+name = "capex_overnight_per_mw"
+wire = "capex_per_mw"
+type = "float"
+unit = "currency/MW"
+description = "Overnight capital cost per MW (one-off); annualised by the service."
+
+[[table.add_candidates.column]]
+name = "capex_per_mw_yr"
+wire = "capex_per_mw_annualised"
+type = "float"
+unit = "currency/MW-yr"
+description = "Annualised capital cost per MW (used as given; wins over the overnight form)."
+
+[[table.add_candidates.column]]
+name = "capex_overnight_per_mwh"
+wire = "capex_per_mwh"
+type = "float"
+unit = "currency/MWh"
+description = "Overnight capital cost per MWh of independently sized storage energy."
+
+[[table.add_candidates.column]]
+name = "capex_per_mwh_yr"
+wire = "capex_per_mwh_annualised"
+type = "float"
+unit = "currency/MWh-yr"
+description = "Annualised capital cost per MWh of independently sized storage energy."
+
+[[table.add_candidates.column]]
+name = "fom_per_mw_yr"
+wire = "fom_per_mw"
+type = "float"
+unit = "currency/MW-yr"
+description = "Fixed operation and maintenance cost per MW per year."
+
+[[table.add_candidates.column]]
+name = "solar_capex_overnight_per_mw"
+wire = "solar_capex_per_mw"
+type = "float"
+unit = "currency/MW"
+description = "Hybrid: overnight capital cost of the solar part per MW."
+
+[[table.add_candidates.column]]
+name = "storage_capex_overnight_per_mw"
+wire = "storage_capex_per_mw"
+type = "float"
+unit = "currency/MW"
+description = "Hybrid or storage: overnight capital cost of the storage power per MW."
+
+[[table.add_candidates.column]]
+name = "storage_capex_overnight_per_mwh"
+wire = "storage_capex_per_mwh"
+type = "float"
+unit = "currency/MWh"
+description = "Hybrid or storage: overnight capital cost of the storage energy per MWh."
+
+[[table.add_candidates.column]]
+name = "solar_capex_per_mw_yr"
+wire = "solar_capex_per_mw_annualised"
+type = "float"
+unit = "currency/MW-yr"
+description = "Hybrid: annualised capital cost of the solar part per MW."
+
+[[table.add_candidates.column]]
+name = "storage_capex_per_mw_yr"
+wire = "storage_capex_per_mw_annualised"
+type = "float"
+unit = "currency/MW-yr"
+description = "Hybrid or storage: annualised capital cost of the storage power per MW."
+
+[[table.add_candidates.column]]
+name = "storage_capex_per_mwh_yr"
+wire = "storage_capex_per_mwh_annualised"
+type = "float"
+unit = "currency/MWh-yr"
+description = "Hybrid or storage: annualised capital cost of the storage energy per MWh."
+
+[[table.add_candidates.column]]
+name = "solar_fom_per_mw_yr"
+wire = "solar_fom_per_mw"
+type = "float"
+unit = "currency/MW-yr"
+description = "Hybrid: fixed O&M of the solar part per MW per year."
+
+[[table.add_candidates.column]]
+name = "storage_fom_per_mw_yr"
+wire = "storage_fom_per_mw"
+type = "float"
+unit = "currency/MW-yr"
+description = "Hybrid or storage: fixed O&M of the storage part per MW per year."
+
+[[table.add_candidates.column]]
+name = "annualisation_rate"
+wire = "discount_rate"
+type = "float"
+unit = "fraction"
+description = "Rate used to annualise this row's overnight costs (with lifetime_years)."
+
+[[table.add_candidates.column]]
+name = "lifetime_years"
+type = "float"
+unit = "year"
+description = "Economic life used to annualise this row's overnight costs."
+
+[[table.add_candidates.column]]
+name = "dollar_year"
+type = "int"
+unit = "year"
+description = "Money year of this row's costs; must match the region's (a mismatch is refused)."
+
+[[table.add_candidates.column]]
+name = "provenance"
+type = "string"
+description = "Free text: where the row's numbers come from (carried, not used by the solve)."
+
+# ------------------------------------------------------------------ add_loads
+
+[table.add_loads]
+description = "New demand drawn on the region."
+
+[[table.add_loads.column]]
+name = "load_id"
+type = "string"
+required = true
+description = "Identifier, unique within the table."
+
+[[table.add_loads.column]]
+name = "name"
+type = "string"
+description = "Display name."
+
+[[table.add_loads.column]]
+name = "bus"
+wire = "bus_id"
+type = "bus"
+required = true
+description = "Connection bus: a bus name of the region, or its integer id."
+
+[[table.add_loads.column]]
+name = "lat"
+type = "float"
+unit = "degree"
+description = "Latitude, WGS 84."
+
+[[table.add_loads.column]]
+name = "lon"
+type = "float"
+unit = "degree"
+description = "Longitude, WGS 84."
+
+[[table.add_loads.column]]
+name = "mw"
+type = "float"
+required = true
+unit = "MW"
+description = "Nameplate demand; the hourly shape comes from the archetype."
+
+[[table.add_loads.column]]
+name = "archetype"
+type = "string"
+required = true
+description = "Hourly load shape: one of the region's archetypes (`ce-studio scopes SCOPE_ID`)."
+
+[[table.add_loads.column]]
+name = "start_year"
+type = "int"
+unit = "year"
+description = "First year the load is present."
+
+[[table.add_loads.column]]
+name = "flex_frac"
+wire = "flex_fraction"
+type = "float"
+unit = "fraction"
+description = "Share of the load that may be curtailed at flex_cost_per_mwh (0 to 1)."
+
+[[table.add_loads.column]]
+name = "flex_cost_per_mwh"
+type = "float"
+unit = "currency/MWh"
+description = "Price at which the flexible share is curtailed."
+
+[[table.add_loads.column]]
+name = "tie_line_id"
+type = "string"
+description = "The add_lines row this load connects through."
+
+# ------------------------------------------------------------------ add_lines
+
+[table.add_lines]
+description = "New transmission paths (and generator or load ties) drawn on the region."
+
+[[table.add_lines.column]]
+name = "line_id"
+type = "string"
+required = true
+description = "Identifier, unique within the table."
+
+[[table.add_lines.column]]
+name = "name"
+type = "string"
+description = "Display name."
+
+[[table.add_lines.column]]
+name = "from_bus"
+type = "bus"
+description = "Sending-end bus (name or integer id); positive flow runs from_bus -> to_bus."
+
+[[table.add_lines.column]]
+name = "to_bus"
+type = "bus"
+description = "Receiving-end bus (name or integer id)."
+
+[[table.add_lines.column]]
+name = "from_site_id"
+type = "string"
+description = "For a tie: the candidate or substation at the sending end, instead of from_bus."
+
+[[table.add_lines.column]]
+name = "to_site_id"
+type = "string"
+description = "For a tie: the candidate or substation at the receiving end, instead of to_bus."
+
+[[table.add_lines.column]]
+name = "rating_mw"
+wire = "mw"
+type = "float"
+required = true
+unit = "MW"
+description = "Thermal rating of the new path."
+
+[[table.add_lines.column]]
+name = "length_km"
+type = "float"
+unit = "km"
+description = "Route length."
+
+[[table.add_lines.column]]
+name = "voltage_kv"
+type = "float"
+unit = "kV"
+description = "Nominal voltage."
+
+[[table.add_lines.column]]
+name = "susceptance"
+type = "float"
+description = "Series susceptance of the new path (absent = derived by the service from voltage and length)."
+
+[[table.add_lines.column]]
+name = "cost_per_mw_km_yr"
+wire = "cost_per_mw_km"
+type = "float"
+unit = "currency/MW-km-yr"
+description = "Annualised cost per MW per km (the service multiplies by rating_mw and length_km)."
+
+[[table.add_lines.column]]
+name = "capex_per_yr"
+wire = "capex"
+type = "float"
+unit = "currency/yr"
+description = "Annualised cost of the whole path (instead of cost_per_mw_km_yr)."
+
+[[table.add_lines.column]]
+name = "cost_overnight_per_mw_km"
+wire = "cost_per_mw_km_overnight"
+type = "float"
+unit = "currency/MW-km"
+description = "The overnight cost the annualised one came from (carried for the record)."
+
+[[table.add_lines.column]]
+name = "annualisation_rate"
+wire = "discount_rate"
+type = "float"
+unit = "fraction"
+description = "Rate the annualised cost was computed with (carried for the record)."
+
+[[table.add_lines.column]]
+name = "lifetime_years"
+type = "float"
+unit = "year"
+description = "Life the annualised cost was computed with (carried for the record)."
+
+[[table.add_lines.column]]
+name = "in_service_year"
+type = "int"
+unit = "year"
+description = "First year the path may be in service."
+
+# ------------------------------------------------------------------ add_substations
+
+[table.add_substations]
+description = "New substations that drawn paths end on."
+
+[[table.add_substations.column]]
+name = "substation_id"
+type = "string"
+required = true
+description = "Identifier, unique within the table (referenced by add_lines from_site_id / to_site_id)."
+
+[[table.add_substations.column]]
+name = "name"
+type = "string"
+description = "Display name."
+
+[[table.add_substations.column]]
+name = "lat"
+type = "float"
+unit = "degree"
+description = "Latitude, WGS 84."
+
+[[table.add_substations.column]]
+name = "lon"
+type = "float"
+unit = "degree"
+description = "Longitude, WGS 84."
+
+[[table.add_substations.column]]
+name = "voltage_kv"
+type = "float"
+unit = "kV"
+description = "Nominal voltage."
+
+[[table.add_substations.column]]
+name = "bus"
+wire = "bus_id"
+type = "bus"
+description = "An existing bus the substation sits on (name or integer id); absent = a new bus."
+
+# ------------------------------------------------------------------ force_builds
+
+[table.force_builds]
+description = "Pins: assets that must be built at an exact size."
+
+[[table.force_builds.column]]
+name = "asset_id"
+type = "string"
+required = true
+description = "The candidate_id to pin (for a hybrid's storage part: `<candidate_id>_sto`)."
+
+[[table.force_builds.column]]
+name = "mw"
+type = "float"
+required = true
+unit = "MW"
+description = "Exact capacity to build."
+
+[[table.force_builds.column]]
+name = "mwh"
+type = "float"
+unit = "MWh"
+description = "Exact storage energy (independently sized storage)."
+
+[[table.force_builds.column]]
+name = "in_service_year"
+type = "int"
+required = true
+unit = "year"
+description = "Year the pinned build is in service."
+
+# ------------------------------------------------------------------ remove_assets
+
+[table.remove_assets]
+description = "Retirements and exclusions of existing assets."
+
+[[table.remove_assets.column]]
+name = "asset_kind"
+type = "string"
+required = true
+description = "What is removed (the service's vocabulary, e.g. a fleet class or a line)."
+
+[[table.remove_assets.column]]
+name = "asset_id"
+type = "string"
+required = true
+description = "The asset (for a fleet aggregate: its technology class)."
+
+[[table.remove_assets.column]]
+name = "bus"
+wire = "bus_id"
+type = "bus"
+description = "The bus of a fleet aggregate (name or integer id)."
+
+[[table.remove_assets.column]]
+name = "retire_year"
+type = "int"
+unit = "year"
+description = "Last year in service; absent = removed from the start."
+
+[[table.remove_assets.column]]
+name = "name"
+type = "string"
+description = "Display name."
+
+[[table.remove_assets.column]]
+name = "provenance"
+type = "string"
+description = "Free text: why the asset is removed."
+
+# ------------------------------------------------------------------ refused spellings
+
+# Service spellings of overnight costs whose names do not say "overnight". Write
+# the explicit name instead (the client sends it under this wire name).
+[[refused]]
+table = "add_candidates"
+name = "capex_per_mw"
+use = "capex_overnight_per_mw (overnight) or capex_per_mw_yr (annualised)"
+
+[[refused]]
+table = "add_candidates"
+name = "capex_per_mwh"
+use = "capex_overnight_per_mwh (overnight) or capex_per_mwh_yr (annualised)"
+
+[[refused]]
+table = "add_candidates"
+name = "solar_capex_per_mw"
+use = "solar_capex_overnight_per_mw (overnight) or solar_capex_per_mw_yr (annualised)"
+
+[[refused]]
+table = "add_candidates"
+name = "storage_capex_per_mw"
+use = "storage_capex_overnight_per_mw (overnight) or storage_capex_per_mw_yr (annualised)"
+
+[[refused]]
+table = "add_candidates"
+name = "storage_capex_per_mwh"
+use = "storage_capex_overnight_per_mwh (overnight) or storage_capex_per_mwh_yr (annualised)"
+
+[[refused]]
+table = "add_lines"
+name = "cost_per_mw_km"
+use = "cost_per_mw_km_yr (annualised) — the explicit name"
+
+[[refused]]
+table = "add_lines"
+name = "capex"
+use = "capex_per_yr (annualised) — the explicit name"
+
+# ------------------------------------------------------------------ technology codes
+
+# CE format 1.0 code (spec/SPEC.md section 6.4) -> the service's code, used when
+# the client builds the request. The service's own codes are accepted as given.
+[technology.to_wire]
+solar_pv = "solar"
+wind_onshore = "wind_on"
+wind_offshore = "wind_off"
+solar_pv_battery = "solar_storage_hybrid"
+battery = "storage"
+gas_cc = "ccgt"
+gas_ct = "ocgt"
+nuclear = "nuclear"
+biomass = "biomass"
+geothermal = "geothermal"
+coal = "coal"
+oil = "oil"
+
+# The service's codes in published result tables -> CE format 1.0 codes, applied
+# by StudioClient.download_run(). A code not listed is kept as published.
+[technology.from_results]
+solar = "solar_pv"
+wind_on = "wind_onshore"
+wind_off = "wind_offshore"
+solar_storage_hybrid = "solar_pv_battery"
+storage = "battery"
+bess = "battery"
+ccgt = "gas_cc"
+ocgt = "gas_ct"
+nuclear_lwr = "nuclear"

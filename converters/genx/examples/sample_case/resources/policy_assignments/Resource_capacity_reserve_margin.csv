@@ -1,0 +1,11 @@
+Resource,Derating_factor_1
+z1_natural_gas_combined_cycle,0.93
+z2_natural_gas_combustion_turbine,0.93
+z1_solar_photovoltaic,0.8
+z2_onshore_wind_turbine,0.8
+z2_offshore_wind_turbine,0.8
+z1_battery,0.95
+z2_hydrogen_storage,0.95
+z2_conventional_hydroelectric,0.9
+z1_small_hydroelectric,0.9
+z1_flexible_demand,0.0

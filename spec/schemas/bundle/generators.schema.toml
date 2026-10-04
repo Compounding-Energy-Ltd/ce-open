@@ -1,0 +1,176 @@
+# CE data format 1.0 — bundle table `generators`.
+
+[table]
+name = "generators"
+scope = "bundle"
+required = false
+since = "1.0"
+grain = "unit"
+primary_key = ["id"]
+unique = [["name"]]
+description = """
+The EXISTING generating fleet. Build options live in `candidates`, never here. `kind = "thermal"` rows
+are dispatchable up to their capacity; `kind = "renewable"` rows are bounded per period by
+capacity × availability, so each needs a series in `availability` keyed by its `name`."""
+
+[[column]]
+name = "id"
+type = "int32"
+required = true
+min = 1
+description = "Generator identifier, unique within the table."
+
+[[column]]
+name = "name"
+type = "string"
+required = true
+description = "Stable generator name, unique within the table and distinct from every `candidates.candidate_id` (both key `availability.site_name`)."
+
+[[column]]
+name = "bus"
+type = "int32"
+required = true
+description = "Connection bus (`buses.id`)."
+
+[[column]]
+name = "technology"
+type = "string"
+required = true
+description = "Technology code (open vocabulary; see SPEC.md §6.4 for the recommended codes)."
+
+[[column]]
+name = "kind"
+type = "string"
+required = true
+enum = ["thermal", "renewable"]
+description = "Operating model: `thermal` (dispatchable) or `renewable` (availability-bounded; includes run-of-river and reservoir hydro modelled by an availability series)."
+
+[[column]]
+name = "existing_mw"
+type = "float64"
+required = true
+unit = "MW"
+min = 0.0
+description = "Installed capacity at the start of the horizon."
+
+[[column]]
+name = "varcost_per_mwh"
+type = "float64"
+unit = "currency/MWh"
+default = 0.0
+description = "Variable cost of energy (fuel + variable O&M). May be negative where a production credit applies."
+
+[[column]]
+name = "fom_per_mw_yr"
+type = "float64"
+unit = "currency/MW-yr"
+min = 0.0
+default = 0.0
+description = "Fixed O&M cost."
+
+[[column]]
+name = "pmin_frac"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+description = "Minimum stable output as a fraction of capacity when committed (thermal)."
+
+[[column]]
+name = "ramp_frac_per_h"
+type = "float64"
+unit = "fraction/h"
+min = 0.0
+description = "Ramp limit as a fraction of capacity per hour (thermal)."
+
+[[column]]
+name = "min_up_h"
+type = "int16"
+unit = "h"
+min = 0
+description = "Minimum up time (thermal, unit commitment)."
+
+[[column]]
+name = "min_down_h"
+type = "int16"
+unit = "h"
+min = 0
+description = "Minimum down time (thermal, unit commitment)."
+
+[[column]]
+name = "startup_cost"
+type = "float64"
+unit = "currency/start"
+min = 0.0
+description = "Cost of one start (thermal, unit commitment)."
+
+[[column]]
+name = "noload_cost_per_h"
+type = "float64"
+unit = "currency/h"
+min = 0.0
+description = "No-load cost while committed (thermal, unit commitment)."
+
+[[column]]
+name = "co2_t_per_mwh"
+type = "float64"
+unit = "tCO2/MWh"
+min = 0.0
+default = 0.0
+description = "Direct CO2 emission intensity of output."
+
+[[column]]
+name = "firm_capacity_frac"
+type = "float64"
+unit = "fraction"
+min = 0.0
+max = 1.0
+description = "Capacity credit toward the planning reserve margin."
+
+[[column]]
+name = "retirable"
+type = "bool"
+default = false
+description = "True when the model may retire the unit before the end of the horizon."
+
+[[column]]
+name = "retirement_year"
+type = "int16"
+unit = "year"
+description = "Announced calendar year after which the unit is no longer available. Null = none."
+
+[[column]]
+name = "lat"
+type = "float64"
+unit = "degree"
+min = -90.0
+max = 90.0
+description = "Latitude, WGS 84. Informational."
+
+[[column]]
+name = "lon"
+type = "float64"
+unit = "degree"
+min = -180.0
+max = 180.0
+description = "Longitude, WGS 84. Informational."
+
+[[foreign_key]]
+column = "bus"
+references = "buses.id"
+
+[[alias]]
+legacy = "varcost_gbp_per_mwh"
+canonical = "varcost_per_mwh"
+
+[[alias]]
+legacy = "fom_gbp_per_mw"
+canonical = "fom_per_mw_yr"
+
+[[alias]]
+legacy = "startup_gbp"
+canonical = "startup_cost"
+
+[[alias]]
+legacy = "noload_gbp_per_h"
+canonical = "noload_cost_per_h"

@@ -1,0 +1,13 @@
+# A toy scenario on the mock service's 3-bus "toy_region" (synthetic data).
+# A 100 MW flat load at bus "coast", plus a 4-hour battery candidate at bus
+# "south" that the solve may build up to 50 MW of.
+
+[scenario]
+name = "toy_flat_load_with_battery"
+scope_id = "toy_region"
+
+[scope]
+buses = ["north", "south", "coast"]   # bus names; the client resolves them to the region's ids
+
+[run]
+rigor_tier = "interactive"

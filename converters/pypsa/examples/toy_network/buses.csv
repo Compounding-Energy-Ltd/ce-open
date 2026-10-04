@@ -1,0 +1,6 @@
+name,v_nom,x,y,carrier,country
+North,400.0,-3.0,56.5,AC,NR
+South,400.0,-1.5,52.0,AC,SR
+East,400.0,0.5,53.0,AC,SR
+Offshore,220.0,2.0,54.0,AC,SR
+East H2,1.0,0.5,53.0,H2,SR

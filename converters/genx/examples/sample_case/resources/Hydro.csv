@@ -1,0 +1,2 @@
+Resource,Zone,New_Build,Can_Retire,Existing_Cap_MW,Max_Cap_MW,Fixed_OM_Cost_per_MWyr,Hydro_Energy_to_Power_Ratio,LDS,Eff_Up,Eff_Down,Min_Power,Ramp_Up_Percentage,Ramp_Dn_Percentage
+z2_conventional_hydroelectric,2,0,0,150.0,-1.0,30000.0,12.0,0,1.0,1.0,0.1,1.0,1.0

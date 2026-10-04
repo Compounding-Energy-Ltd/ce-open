@@ -1,0 +1,4 @@
+id,name,zone,lat,lon,voltage_kv,hosting_mw,hosting_expandable,hosting_expand_cost_per_mw_yr
+1,north,zone_a,10,20,400,,false,
+2,south,zone_b,9.6,20.1,400,800,false,
+3,coast,zone_b,9.8,20.6,220,600,true,12000

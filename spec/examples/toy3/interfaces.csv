@@ -1,0 +1,4 @@
+interface_id,name,line_id,orientation,max_fwd_mw,max_rev_mw,source
+1,north_export,1,1,500,400,synthetic
+1,north_export,3,1,500,400,synthetic
+1,north_export,4,1,500,400,synthetic

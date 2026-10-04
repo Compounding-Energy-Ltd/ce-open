@@ -1,0 +1,100 @@
+# CE data format 1.0 — results table `qa_checks`.
+
+[table]
+name = "qa_checks"
+scope = "results"
+required = false
+since = "1.0"
+grain = "check"
+family = "audit"
+primary_key = ["check", "year", "scope"]
+description = """
+One row per quality check the run performed on its own results (energy balance re-sum, flow limits,
+cost reconciliation, adequacy, ...). A check with nothing to examine is `NA` with `count = 0`, never `PASS`.
+The overall status in `qa_report.toml` is derived from these rows (SPEC.md §9.6)."""
+
+[[column]]
+name = "check"
+type = "string"
+required = true
+description = "Check name (snake_case)."
+
+[[column]]
+name = "family"
+type = "string"
+required = true
+description = "Check family (e.g. `balance`, `flows`, `cost`, `adequacy`)."
+
+[[column]]
+name = "status"
+type = "string"
+required = true
+enum = ["PASS", "WARN", "FAIL", "NA"]
+description = "Outcome of the check."
+
+[[column]]
+name = "value"
+type = "float64"
+description = "The measured value (e.g. the worst residual). Null when not applicable."
+
+[[column]]
+name = "tolerance"
+type = "float64"
+min = 0.0
+description = "The tolerance the value was judged against."
+
+[[column]]
+name = "unit"
+type = "string"
+default = ""
+description = "Unit of `value` and `tolerance`."
+
+[[column]]
+name = "worst_where"
+type = "string"
+default = ""
+description = "Where the worst value occurred (free text, e.g. `bus=b2 block=1 period=18`)."
+
+[[column]]
+name = "count"
+type = "int64"
+required = true
+min = 0
+description = "Number of items that failed or warned."
+
+[[column]]
+name = "population"
+type = "int64"
+required = true
+min = 0
+description = "Number of items examined (0 ⇒ the status must be NA)."
+
+[[column]]
+name = "year"
+type = "int16"
+default = 0
+description = "Investment year the check applies to; 0 = the whole run."
+
+[[column]]
+name = "scope"
+type = "string"
+default = ""
+description = "Sub-scope of the check (free text; empty = whole run)."
+
+[[column]]
+name = "source"
+type = "string"
+default = ""
+description = "What the check read (free text)."
+
+[[column]]
+name = "note"
+type = "string"
+default = ""
+description = "Free-text explanation."
+
+[[column]]
+name = "required"
+type = "bool"
+required = true
+description = "True when the run's configuration requires this check; a required NA makes the run INCOMPLETE."

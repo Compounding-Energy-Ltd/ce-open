@@ -1,0 +1,16 @@
+# Synthetic QA report (invented numbers).
+
+[qa]
+status = "PASS"
+n_pass = 4
+n_warn = 0
+n_fail = 0
+n_na = 1
+n_required_na = 0
+failing = []
+table = "qa_checks.csv"
+
+[tolerances]
+balance_atol_mw = 0.001
+flow_mw = 0.0001
+cost_rel = 1e-06

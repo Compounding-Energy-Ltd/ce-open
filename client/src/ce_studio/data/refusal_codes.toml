@@ -1,0 +1,576 @@
+# Copyright 2026 Compounding Energy Ltd
+# SPDX-License-Identifier: Apache-2.0
+#
+# Refusal codes returned by the Scenario Studio, with a plain-language summary
+# and the usual fix. The service is the authority: a code missing here is still
+# surfaced verbatim (category "unknown", or a family below when its prefix
+# matches), so a newer service never breaks an older client.
+#
+# A refusal means NOTHING from the scenario was applied. Codes beginning
+# "warn_" are warnings: the row was applied and the message says how.
+#
+# Categories:
+#   scope         — the scenario's region / bus set
+#   delta         — whole-file problems in delta.toml or a table
+#   placement     — where a drawn asset sits, and its identity
+#   cost          — money and value sanity on candidate rows
+#   storage       — storage and hybrid shape
+#   sizing        — optimise-vs-exact sizing
+#   cf            — capacity-factor profiles for drawn wind / solar
+#   lines         — drawn transmission, gen-ties, substations
+#   ties          — assets that reference a gen-tie line
+#   force_builds  — pinned (must-exist) assets
+#   remove_assets — retirements and exclusions
+#   loads         — drawn loads
+#   policy        — policy rows (share floors, caps, carbon)
+#   regulation    — local regulation rows
+#   hosting       — per-bus hosting limits
+#   run_setting   — a [run] setting with a bad value
+#   run           — run-level outcomes (the whole run stopped)
+#   qa            — the per-run quality report blocked the result
+#   warning       — applied, with a note
+#   client        — found by this client before anything was sent
+
+version = 1
+
+# ---------------------------------------------------------------- families
+# Checked in order when a code is not listed under [codes].
+
+[[family]]
+prefix = "warn_"
+category = "warning"
+summary = "A warning: the row was applied, as the message describes."
+fix = "Read the message; change the input only if the applied reading is not what you meant."
+
+[[family]]
+prefix = "bad_reinforce_"
+category = "run_setting"
+summary = "A line-reinforcement setting in [run] has the wrong type or an out-of-range value."
+fix = "Correct the value named in the message, or omit the key to take the service default."
+
+[[family]]
+prefix = "policy_"
+category = "policy"
+summary = "A policy row (share floor, cap or carbon instrument) is incomplete or inconsistent."
+fix = "Complete the policy row as the message describes, or remove it."
+
+[[family]]
+prefix = "regulation_"
+category = "regulation"
+summary = "A local-regulation row cannot be applied as written."
+fix = "Name the states and technologies the rule covers, or remove the row."
+
+[[family]]
+prefix = "bus_limit"
+category = "hosting"
+summary = "A per-bus hosting-limit row cannot be applied as written."
+fix = "Check the bus, the value and the scope named in the message."
+
+[[family]]
+prefix = "bad_"
+category = "run_setting"
+summary = "A setting has the wrong type or an out-of-range value."
+fix = "Correct the value named in the message, or omit the key to take the service default."
+
+# ---------------------------------------------------------------- scope
+
+[codes.scope_missing]
+category = "scope"
+summary = "The scenario carries no [scope] bus set, so it would solve the whole base system."
+fix = "Name the buses the scenario may touch in delta.toml: [scope] buses = [\"bus name\", ...]."
+
+[codes.bus_set_missing]
+category = "scope"
+summary = "The submitted scope bus set is empty."
+fix = "Name the buses the scenario may touch in delta.toml: [scope] buses = [...]."
+
+[codes.bus_set_invalid]
+category = "scope"
+summary = "The submitted scope bus set is not a list of the region's integer bus ids."
+fix = "Give bus names in [scope] buses (the client resolves them), or the region's integer ids."
+
+[codes.unknown_scope]
+category = "scope"
+summary = "No region with this id is available to this account."
+fix = "Pick a served region; list them with `ce-studio scopes`."
+
+[codes.scope_unserved]
+category = "scope"
+summary = "The region exists but is not offered for scenarios."
+fix = "Pick a served region; list them with `ce-studio scopes`."
+
+[codes.base_run_missing]
+category = "scope"
+summary = "The chosen region has no base run to compare against, so it cannot take scenarios yet."
+fix = "Pick another served region; list them with `ce-studio scopes`."
+
+[codes.out_of_scope]
+category = "placement"
+summary = "A drawn asset or line end lies outside the scenario's declared scope."
+fix = "Move it inside the scope, widen the scope, or connect it with a gen-tie that ends inside."
+
+[codes.region_refusal_min_buses]
+category = "scope"
+summary = "The requested region resolves to too few buses for a meaningful scoped run."
+fix = "Draw a larger region, or run against the full parent region."
+
+# ---------------------------------------------------------------- delta
+
+[codes.bad_costs]
+category = "delta"
+summary = "[costs] is declared but incomplete: it needs both annualization_rate and crp_years."
+fix = "Supply both keys, or drop [costs] and send annualised capex directly."
+
+[codes.bad_rigor_tier]
+category = "delta"
+summary = "[run] rigor_tier is not \"interactive\" or \"deliverable\"."
+fix = "Choose one of the two tiers, or omit the key (absent means deliverable)."
+
+[codes.bad_envelope_column]
+category = "delta"
+summary = "[run] envelope_column is not a well-formed siting-regime name."
+fix = "Name a siting regime listed by the region, or omit the key for the default."
+
+[codes.envelope_column_unknown]
+category = "delta"
+summary = "[run] envelope_column is well formed but the region does not offer it."
+fix = "Pick a siting regime the region lists, or omit the key."
+
+[codes.bad_gap_tolerance]
+category = "run_setting"
+summary = "[run] gap_tolerance is not a number strictly between 0 and 1."
+fix = "Send a relative gap such as 0.02, or omit the key for the tier default."
+
+[codes.bad_run_qa]
+category = "run_setting"
+summary = "The quality-report mode is set by the service operator, not per scenario."
+fix = "Remove run_qa / assumptions_register from the delta's [run] table."
+
+[codes.missing_column]
+category = "delta"
+summary = "A required column is missing from a table."
+fix = "Add the column named in the refusal."
+
+[codes.mixed_dollar_year]
+category = "cost"
+summary = "Candidate costs are declared in more than one dollar year."
+fix = "Restate every cost in one dollar year (the region's cost year) before submitting."
+
+[codes.load_starts_after_horizon]
+category = "loads"
+summary = "A drawn load starts after every year the study models, so it would never appear."
+fix = "Move the start year inside the study horizon."
+
+[codes.build_starts_after_horizon]
+category = "force_builds"
+summary = "A pinned build enters service after every year the study models."
+fix = "Move the in-service year inside the study horizon."
+
+# ---------------------------------------------------------------- placement
+
+[codes.unmappable_bus]
+category = "placement"
+summary = "The bus id is not a bus of the base region."
+fix = "Re-snap the drawn point to a bus of the region."
+
+[codes.unknown_bus]
+category = "placement"
+summary = "A row names a bus the base region does not have."
+fix = "Use a bus id from the region's bus table."
+
+[codes.duplicate_site]
+category = "placement"
+summary = "The site id already exists in the base region or repeats within the delta."
+fix = "Give every drawn site a fresh, unique id."
+
+[codes.unsupported_technology]
+category = "placement"
+summary = "The technology is outside the accepted vocabulary."
+fix = "Use an accepted technology class; there is no fallback mapping."
+
+[codes.missing_id]
+category = "placement"
+summary = "A row that needs an id has an empty one."
+fix = "Give the row a unique id."
+
+# ---------------------------------------------------------------- cost
+
+[codes.capex_overnight_only]
+category = "cost"
+summary = "Overnight capex was given without an annualised figure or a [costs] annualisation."
+fix = "Send annualised capex, or declare [costs] annualization_rate and crp_years."
+
+[codes.negative_cost]
+category = "cost"
+summary = "A cost, length or emissions value is negative."
+fix = "Correct the value; negative costs are refused outright."
+
+[codes.nonpositive_mw]
+category = "cost"
+summary = "A capacity (MW) is zero or negative."
+fix = "Give the asset a positive MW size."
+
+[codes.bad_lead_time]
+category = "cost"
+summary = "lead_time_years is negative."
+fix = "Use a lead time of zero or more years."
+
+[codes.bad_cf_mean]
+category = "cost"
+summary = "cf_mean lies outside [0, 1]."
+fix = "Send the mean capacity factor as a fraction."
+
+[codes.bad_dcac_ratio]
+category = "cost"
+summary = "The DC/AC ratio is zero or negative."
+fix = "Send a positive DC/AC ratio."
+
+[codes.bad_firm_frac]
+category = "cost"
+summary = "The firm-capacity fraction lies outside [0, 1]."
+fix = "Send the firm fraction as a value between 0 and 1."
+
+[codes.bad_efficiency]
+category = "storage"
+summary = "A charge or discharge efficiency lies outside (0, 1]."
+fix = "Send efficiencies as fractions greater than 0 and at most 1."
+
+# ---------------------------------------------------------------- storage
+
+[codes.hybrid_missing_solar]
+category = "storage"
+summary = "A solar-plus-storage hybrid has no solar part."
+fix = "Give the hybrid a solar size, or draw it as standalone storage."
+
+[codes.hybrid_missing_storage]
+category = "storage"
+summary = "A solar-plus-storage hybrid has no storage part."
+fix = "Give the hybrid a storage size, or draw it as plain solar."
+
+[codes.missing_duration]
+category = "storage"
+summary = "A storage or hybrid row has neither a duration nor an energy size."
+fix = "Set duration_h (coupled) or storage_mwh (decoupled)."
+
+[codes.negative_mwh]
+category = "storage"
+summary = "An energy size (MWh) is negative."
+fix = "Use zero or a positive MWh."
+
+[codes.must_take_unsupported]
+category = "storage"
+summary = "Must-take (no curtailment) was requested for a non-renewable asset."
+fix = "Must-take applies to wind and solar only; remove the flag from this row."
+
+# ---------------------------------------------------------------- sizing
+
+[codes.bad_sizing_mode]
+category = "sizing"
+summary = "sizing_mode is not empty, \"optimize\" or \"exact\"."
+fix = "Use optimize (the solver chooses up to the envelope) or exact (pinned)."
+
+[codes.exact_without_pin]
+category = "sizing"
+summary = "An exact-sized asset has no matching force_builds pin."
+fix = "Add the pin; a hybrid needs one for its solar part and one for its battery part."
+
+[codes.exact_without_mwh_pin]
+category = "sizing"
+summary = "An exact-sized storage asset with an energy size has no MWh on its pin."
+fix = "Add the mwh column to the storage pin."
+
+# ---------------------------------------------------------------- cf
+
+[codes.cf_ref_unsupported]
+category = "cf"
+summary = "A capacity-factor profile was attached to a storage or thermal row."
+fix = "Attach profiles to wind, solar and hybrid rows only."
+
+[codes.cf_ref_missing]
+category = "cf"
+summary = "The referenced capacity-factor file is not in the bundle."
+fix = "The service builds capacity-factor profiles for drawn wind and solar itself and this client uploads none: remove the profile reference."
+
+[codes.cf_ref_outside_delta]
+category = "cf"
+summary = "The capacity-factor reference points outside the scenario bundle."
+fix = "Remove the profile reference: the service builds capacity-factor profiles itself."
+
+[codes.bad_cf_table]
+category = "cf"
+summary = "The profile lacks period/cf, or carries only half of the year/weather axis."
+fix = "Send (period, cf), or the full (year, weather, period, cf)."
+
+[codes.bad_cf_values]
+category = "cf"
+summary = "A capacity-factor value lies outside [0, 1]."
+fix = "Send capacity factors as fractions."
+
+[codes.cf_years_mismatch]
+category = "cf"
+summary = "The profile's weather years do not match the region's weather years."
+fix = "Supply exactly the weather years the region's manifest lists."
+
+[codes.cf_length_mismatch]
+category = "cf"
+summary = "The profile has the wrong number of hours for the region's weather year."
+fix = "Match the region's hour count (8784 on a leap weather year, else 8760)."
+
+# ---------------------------------------------------------------- lines
+
+[codes.self_loop]
+category = "lines"
+summary = "A line starts and ends at the same bus."
+fix = "Connect two different buses."
+
+[codes.tie_chain_unanchored]
+category = "lines"
+summary = "Drawn assets are wired to each other but nothing connects the group to an existing bus."
+fix = "Draw one line from the group to a bus of the region."
+
+[codes.tie_line_end_invalid]
+category = "lines"
+summary = "A gen-tie end is malformed: each end needs exactly one of a bus or a site."
+fix = "Give each end one bus or one site; the far end must be an existing bus."
+
+[codes.tie_line_end_out_of_scope]
+category = "lines"
+summary = "A gen-tie ends at a bus outside the scope."
+fix = "End the tie at a bus inside the scope."
+
+[codes.tie_line_orphan]
+category = "lines"
+summary = "A site-ended line is not claimed by any drawn asset."
+fix = "Reference it from the asset's tie_line_id, or make it a bus-to-bus line."
+
+[codes.line_cost_underivable]
+category = "lines"
+summary = "No cost could be derived for a line (no price was sent and the default book does not cover this currency)."
+fix = "Send an explicit cost for the line, in the region's currency."
+
+[codes.substation_unconnected]
+category = "lines"
+summary = "A drawn substation is not an end of any drawn line."
+fix = "Connect the substation with at least one drawn line, or remove it."
+
+# ---------------------------------------------------------------- ties
+
+[codes.tie_line_missing]
+category = "ties"
+summary = "tie_line_id names a line that is not in this delta."
+fix = "Include the tie line in the same submission."
+
+[codes.tie_line_shared]
+category = "ties"
+summary = "The line is already another asset's gen-tie."
+fix = "A line is one asset's gen-tie; draw a second line."
+
+[codes.tie_line_mismatch]
+category = "ties"
+summary = "The tie line and the asset do not reference each other consistently."
+fix = "Make the line's site end name this asset, and the asset name this line."
+
+# ---------------------------------------------------------------- force_builds
+
+[codes.bad_year]
+category = "force_builds"
+summary = "A year lies outside the accepted range (1950-2100)."
+fix = "Send a calendar year inside the study horizon."
+
+[codes.bad_kind]
+category = "force_builds"
+summary = "The kind column holds a value the table does not accept."
+fix = "Use one of the kinds the table documents."
+
+[codes.mwh_on_non_storage]
+category = "force_builds"
+summary = "An energy pin (MWh) was put on a non-storage asset."
+fix = "Pin MWh on storage only."
+
+[codes.duplicate_force]
+category = "force_builds"
+summary = "Two pins name the same asset and in-service year."
+fix = "Keep one pin per asset and year."
+
+[codes.unknown_asset]
+category = "force_builds"
+summary = "The pin or removal names an asset the region does not have."
+fix = "Use an asset id from the region (existing fleet is keyed by bus and technology)."
+
+[codes.force_remove_conflict]
+category = "force_builds"
+summary = "The same asset is both pinned and removed."
+fix = "Decide: keep the pin or the removal, not both."
+
+[codes.force_exceeds_envelope]
+category = "force_builds"
+summary = "The pinned MW exceeds the candidate's build envelope."
+fix = "Raise the envelope or lower the pin."
+
+# ---------------------------------------------------------------- remove_assets
+
+[codes.add_remove_conflict]
+category = "remove_assets"
+summary = "The delta both adds and removes the same candidate."
+fix = "Decide: keep the addition or the removal, not both."
+
+# ---------------------------------------------------------------- loads
+
+[codes.bad_load_spec]
+category = "loads"
+summary = "A load row must give exactly one of archetype or profile_ref."
+fix = "Supply one, never both, never neither."
+
+[codes.unknown_archetype]
+category = "loads"
+summary = "The load archetype is not published for this region."
+fix = "Use an archetype listed in the region's manifest."
+
+[codes.profile_missing]
+category = "loads"
+summary = "The referenced load profile file is not in the bundle."
+fix = "Include the profile file the row references."
+
+[codes.profile_ref_outside_delta]
+category = "loads"
+summary = "The load profile reference points outside the scenario bundle."
+fix = "Reference a file inside the bundle."
+
+[codes.profile_length]
+category = "loads"
+summary = "The load profile has the wrong number of hours for the region."
+fix = "Match the region's hour count (8784 on a leap weather year, else 8760)."
+
+[codes.profile_negative]
+category = "loads"
+summary = "The load profile contains negative MW."
+fix = "Use non-negative MW throughout."
+
+[codes.bad_flex_fraction]
+category = "loads"
+summary = "flex_fraction lies outside [0, 1]."
+fix = "Send the flexible share as a fraction."
+
+[codes.flex_cost_missing]
+category = "loads"
+summary = "A flexible load has no positive flexibility cost."
+fix = "Flexibility is a bid: give flex_cost a finite positive price."
+
+[codes.flex_profile_unsupported]
+category = "loads"
+summary = "Flexibility was requested on a profile load or a shaped archetype."
+fix = "Use a flat archetype for flexible loads."
+
+# ---------------------------------------------------------------- run / qa
+
+[codes.qa_failed]
+category = "qa"
+summary = "The run's quality report failed and the service is set to block failing runs."
+fix = "Read the QA report (`ce-studio results <id> --qa`); the failing checks say what to change."
+
+[codes.unclassified]
+category = "run"
+summary = "The service stopped the run; its own words are in the message."
+fix = "Read the message. Transient service failures can simply be resubmitted."
+
+[codes.withdrawn]
+category = "run"
+summary = "The scenario was withdrawn before it ran."
+fix = "Resubmit if the withdrawal was not intended."
+
+# ---------------------------------------------------------------- client
+
+[codes.delta_toml_missing]
+category = "client"
+summary = "The bundle directory has no delta.toml."
+fix = "Every scenario bundle needs a delta.toml at its root."
+
+[codes.delta_toml_unreadable]
+category = "client"
+summary = "delta.toml is not valid TOML."
+fix = "Fix the TOML syntax error named in the message."
+
+[codes.unsupported_file]
+category = "client"
+summary = "The bundle holds a file the client does not send."
+fix = "Keep only delta.toml and top-level CSV or Parquet tables; the service builds capacity-factor profiles itself."
+
+[codes.scope_id_missing]
+category = "client"
+summary = "delta.toml names no region."
+fix = "Add [scenario] scope_id = \"...\" (list the regions with `ce-studio scopes`)."
+
+[codes.bad_scope]
+category = "client"
+summary = "The [scope] section is malformed."
+fix = "Give [scope] buses = [...] as bus names (or integer ids), and not also bus_set."
+
+[codes.unknown_section]
+category = "client"
+summary = "delta.toml has a section the service does not read; it would be ignored."
+fix = "Use [scenario], [scope], [run] and the documented pass-through sections only (see the README)."
+
+[codes.ambiguous_cost_column]
+category = "client"
+summary = "A cost column whose name does not say whether the cost is overnight or annualised."
+fix = "Rename the column to its explicit name, as the message says, after checking the values."
+
+[codes.duplicate_column]
+category = "client"
+summary = "Two columns of one table are spellings of the same column."
+fix = "Keep one of them."
+
+[codes.bad_value]
+category = "client"
+summary = "A cell cannot be read as its column's type, or a required cell is empty."
+fix = "Correct the cell named in the message (types and units are in the README's delta table reference)."
+
+[codes.unknown_bus_name]
+category = "client"
+summary = "A bus name that is not a bus of the region."
+fix = "Use a bus name from the region's bus listing (StudioClient.scope_buses), or its integer id."
+
+[codes.ambiguous_bus_name]
+category = "client"
+summary = "A bus name that more than one bus of the region carries."
+fix = "Use the region's integer bus id for this bus, stamped with [scope] build."
+
+[codes.stale_bus_ids]
+category = "client"
+summary = "The bundle's integer bus ids belong to a different build of the region than the one served now."
+fix = "Re-read the ids from the current region (and update [scope] build), or use bus names."
+
+[codes.payload_too_large]
+category = "client"
+summary = "The request body is larger than the service reads."
+fix = "Split the scenario, or remove columns the solve does not need."
+
+[codes.bad_submission_ref]
+category = "client"
+summary = "The submission reference (idempotency key) is malformed."
+fix = "Use 8 to 64 letters, digits, dashes or underscores, or let the client generate one."
+
+[codes.submission_in_flight]
+category = "delta"
+summary = "A submission with this reference is still being staged."
+fix = "Wait a moment and check `ce-studio list`; re-sending the same reference is safe."
+
+[codes.warn_unknown_column]
+category = "warning"
+summary = "A column the client does not recognise; it is not sent."
+fix = "Check the spelling against the README's delta table reference."
+
+[codes.warn_bus_ids_unstamped]
+category = "warning"
+summary = "Integer bus ids are used without the region build they belong to."
+fix = "Use bus names, or add [scope] build = \"...\" from `ce-studio scopes SCOPE_ID`."
+
+[codes.warn_unknown_table]
+category = "warning"
+summary = "A table name the client does not recognise; it is not sent."
+fix = "Check the spelling of the table name."
+
+[codes.warn_base_path_in_delta]
+category = "warning"
+summary = "delta.toml names base paths; the service resolves the base from the region instead."
+fix = "Remove base_bundle / base_run / weather_dir and name the region with [scenario] scope_id."

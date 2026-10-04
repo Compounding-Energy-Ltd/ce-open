@@ -1,0 +1,2 @@
+Resource,Zone,New_Build,Can_Retire,Existing_Cap_MW,Max_Cap_MW,Max_Flexible_Demand_Delay,Max_Flexible_Demand_Advance,Flexible_Demand_Energy_Eff
+z1_flexible_demand,1,0,0,30.0,-1.0,2,2,1.0

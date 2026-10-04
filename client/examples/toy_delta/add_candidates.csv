@@ -1,0 +1,2 @@
+candidate_id,technology,bus,max_mw,duration_h,capex_per_mw_yr,fom_per_mw_yr,in_service_year
+toy-bess-1,battery,south,50,4,90000,10000,2030
