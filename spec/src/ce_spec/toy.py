@@ -33,6 +33,19 @@ GENERATION = "toy3-g1"
 BUSES = [(1, "north", "zone_a", 10.0, 20.0, 400.0),
          (2, "south", "zone_b", 9.6, 20.1, 400.0),
          (3, "coast", "zone_b", 9.8, 20.6, 220.0)]
+
+def _sin(x: float) -> float:
+    """math.sin on a 1e-9 grid, so the toy is byte-identical across platforms.
+
+    libm implementations (macOS vs glibc) may differ in the last ulp (~2e-16); the toy's demand and cf
+    values are then rounded to 3-4 decimals and several of them sit within 1e-6 of a rounding boundary
+    (CI, 2026-10-04: 72 demand values such as 207.8125), so an ulp flipped the committed examples on
+    Linux. Rounding the sine to 9 decimals makes every later operation (+, *, round) IEEE-identical on
+    both platforms; a flip would need a libm result within ~2e-16 of a 1e-9 half-boundary (about 2e-7
+    per value, ~0.01 expected over the generator's evaluations), whereas a 1e-12 grid would leave ~6.
+    """
+    return round(math.sin(x), 9)
+
 BASE_LOAD = {1: 250.0, 2: 420.0, 3: 180.0}
 
 
@@ -62,7 +75,7 @@ def _axis():
 
 def demand_mw(bus: int, y: int, k: int, w: int, b: int, p: int) -> float:
     hour = p - 1
-    daily = 1.0 + 0.25 * math.sin(2 * math.pi * (hour - 9) / 24)
+    daily = 1.0 + 0.25 * _sin(2 * math.pi * (hour - 9) / 24)
     season = 1.15 if b == 1 else 0.95
     growth = 1.0 + 0.02 * (y - YEARS[0])
     scen = 1.0 if k == 1 else 1.1
@@ -73,9 +86,9 @@ def demand_mw(bus: int, y: int, k: int, w: int, b: int, p: int) -> float:
 def cf(site: str, y: int, k: int, w: int, b: int, p: int) -> float:
     hour = p - 1
     if site == "wind_north":
-        v = 0.38 + 0.22 * math.sin(2 * math.pi * (hour + 3 * (w - WEATHER[0])) / 24) + (0.1 if b == 1 else -0.05)
+        v = 0.38 + 0.22 * _sin(2 * math.pi * (hour + 3 * (w - WEATHER[0])) / 24) + (0.1 if b == 1 else -0.05)
     else:   # solar-shaped sites
-        v = max(0.0, math.sin(math.pi * (hour - 6) / 12)) * (0.55 if b == 1 else 0.85)
+        v = max(0.0, _sin(math.pi * (hour - 6) / 12)) * (0.55 if b == 1 else 0.85)
         if site == "hybrid_coast_c1":
             v *= 0.95
         v *= 0.97 if w == WEATHER[1] else 1.0
@@ -390,14 +403,14 @@ def write_toy_results(root: str | Path, fmt: str = "parquet") -> Path:
         for c, v in zip(sto, (y, k, w, b, p, "battery_south", "battery", "south", round(soc, 6),
                               sp if charging else 0.0, sp if (sp and not charging) else 0.0)):
             sto[c].append(v)
-        energy = 45.0 + 10.0 * math.sin(2 * math.pi * (hour - 12) / 24)
+        energy = 45.0 + 10.0 * _sin(2 * math.pi * (hour - 12) / 24)
         for bus, name in ((1, "north"), (2, "south"), (3, "coast")):
             loss = -energy * 0.004 * (bus - 1)
             cong = 0.0 if bus == 1 else 3.0 * bus * (1 if 17 <= hour < 21 else 0)
             for c, v in zip(lmp, (y, k, w, b, name, p, energy + cong + loss, energy, cong, loss)):
                 lmp[c].append(v)
         for line, capmw in LINE_CAP.items():
-            f = round(0.6 * capmw * math.sin(2 * math.pi * (hour + len(line)) / 24), 6)
+            f = round(0.6 * capmw * _sin(2 * math.pi * (hour + len(line)) / 24), 6)
             for c, v in zip(flows, (y, k, w, b, line, p, f)):
                 flows[c].append(v)
     put("generation", gen, "dispatch", "unit-period", "Per-period dispatch by unit", ["dispatch_mw"])

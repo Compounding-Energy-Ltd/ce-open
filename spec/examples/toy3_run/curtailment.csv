@@ -160,7 +160,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2030,1,2019,2,8,wind_north,wind_onshore,north,132,123.8,8.200000000000003
 2030,1,2019,2,8,solar_south_c1,solar_pv,south,42.68,42.68,0
 2030,1,2019,2,9,wind_north,wind_onshore,north,116.07,109.463,6.606999999999999
-2030,1,2019,2,9,solar_south_c1,solar_pv,south,82.44,79.196,3.2439999999999998
+2030,1,2019,2,9,solar_south_c1,solar_pv,south,82.46,79.214,3.245999999999995
 2030,1,2019,2,10,wind_north,wind_onshore,north,99,94.1,4.900000000000006
 2030,1,2019,2,10,solar_south_c1,solar_pv,south,116.6,109.94,6.659999999999997
 2030,1,2019,2,11,wind_north,wind_onshore,north,81.93,78.737,3.193000000000012
@@ -176,7 +176,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2030,1,2019,2,16,wind_north,wind_onshore,north,33,33,0
 2030,1,2019,2,16,solar_south_c1,solar_pv,south,116.6,109.94,6.659999999999997
 2030,1,2019,2,17,wind_north,wind_onshore,north,35.25,35.25,0
-2030,1,2019,2,17,solar_south_c1,solar_pv,south,82.44,79.196,3.2439999999999998
+2030,1,2019,2,17,solar_south_c1,solar_pv,south,82.46,79.214,3.245999999999995
 2030,1,2019,2,18,wind_north,wind_onshore,north,41.85,41.85,0
 2030,1,2019,2,18,solar_south_c1,solar_pv,south,42.68,42.68,0
 2030,1,2019,2,19,wind_north,wind_onshore,north,52.32,52.088,0.23199999999999932
@@ -352,7 +352,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2030,2,2019,2,8,wind_north,wind_onshore,north,132,123.8,8.200000000000003
 2030,2,2019,2,8,solar_south_c1,solar_pv,south,42.68,42.68,0
 2030,2,2019,2,9,wind_north,wind_onshore,north,116.07,109.463,6.606999999999999
-2030,2,2019,2,9,solar_south_c1,solar_pv,south,82.44,79.196,3.2439999999999998
+2030,2,2019,2,9,solar_south_c1,solar_pv,south,82.46,79.214,3.245999999999995
 2030,2,2019,2,10,wind_north,wind_onshore,north,99,94.1,4.900000000000006
 2030,2,2019,2,10,solar_south_c1,solar_pv,south,116.6,109.94,6.659999999999997
 2030,2,2019,2,11,wind_north,wind_onshore,north,81.93,78.737,3.193000000000012
@@ -368,7 +368,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2030,2,2019,2,16,wind_north,wind_onshore,north,33,33,0
 2030,2,2019,2,16,solar_south_c1,solar_pv,south,116.6,109.94,6.659999999999997
 2030,2,2019,2,17,wind_north,wind_onshore,north,35.25,35.25,0
-2030,2,2019,2,17,solar_south_c1,solar_pv,south,82.44,79.196,3.2439999999999998
+2030,2,2019,2,17,solar_south_c1,solar_pv,south,82.46,79.214,3.245999999999995
 2030,2,2019,2,18,wind_north,wind_onshore,north,41.85,41.85,0
 2030,2,2019,2,18,solar_south_c1,solar_pv,south,42.68,42.68,0
 2030,2,2019,2,19,wind_north,wind_onshore,north,52.32,52.088,0.23199999999999932
@@ -624,7 +624,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2035,1,2019,2,8,solar_south_c1,solar_pv,south,74.69,72.221,2.468999999999994
 2035,1,2019,2,8,hybrid_coast_c1,solar_pv_battery,coast,48.648,48.648,0
 2035,1,2019,2,9,wind_north,wind_onshore,north,116.07,109.463,6.606999999999999
-2035,1,2019,2,9,solar_south_c1,solar_pv,south,144.27,134.843,9.427000000000021
+2035,1,2019,2,9,solar_south_c1,solar_pv,south,144.305,134.8745,9.430499999999995
 2035,1,2019,2,9,hybrid_coast_c1,solar_pv_battery,coast,93.984,89.5856,4.398399999999995
 2035,1,2019,2,10,wind_north,wind_onshore,north,99,94.1,4.900000000000006
 2035,1,2019,2,10,solar_south_c1,solar_pv,south,204.05,188.645,15.405000000000001
@@ -648,7 +648,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2035,1,2019,2,16,solar_south_c1,solar_pv,south,204.05,188.645,15.405000000000001
 2035,1,2019,2,16,hybrid_coast_c1,solar_pv_battery,coast,132.936,124.6424,8.293600000000012
 2035,1,2019,2,17,wind_north,wind_onshore,north,35.25,35.25,0
-2035,1,2019,2,17,solar_south_c1,solar_pv,south,144.27,134.843,9.427000000000021
+2035,1,2019,2,17,solar_south_c1,solar_pv,south,144.305,134.8745,9.430499999999995
 2035,1,2019,2,17,hybrid_coast_c1,solar_pv_battery,coast,93.984,89.5856,4.398399999999995
 2035,1,2019,2,18,wind_north,wind_onshore,north,41.85,41.85,0
 2035,1,2019,2,18,solar_south_c1,solar_pv,south,74.69,72.221,2.468999999999994
@@ -912,7 +912,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2035,2,2019,2,8,solar_south_c1,solar_pv,south,74.69,72.221,2.468999999999994
 2035,2,2019,2,8,hybrid_coast_c1,solar_pv_battery,coast,48.648,48.648,0
 2035,2,2019,2,9,wind_north,wind_onshore,north,116.07,109.463,6.606999999999999
-2035,2,2019,2,9,solar_south_c1,solar_pv,south,144.27,134.843,9.427000000000021
+2035,2,2019,2,9,solar_south_c1,solar_pv,south,144.305,134.8745,9.430499999999995
 2035,2,2019,2,9,hybrid_coast_c1,solar_pv_battery,coast,93.984,89.5856,4.398399999999995
 2035,2,2019,2,10,wind_north,wind_onshore,north,99,94.1,4.900000000000006
 2035,2,2019,2,10,solar_south_c1,solar_pv,south,204.05,188.645,15.405000000000001
@@ -936,7 +936,7 @@ year,scenario,weather,block,period,site_name,technology,bus,available_mw,dispatc
 2035,2,2019,2,16,solar_south_c1,solar_pv,south,204.05,188.645,15.405000000000001
 2035,2,2019,2,16,hybrid_coast_c1,solar_pv_battery,coast,132.936,124.6424,8.293600000000012
 2035,2,2019,2,17,wind_north,wind_onshore,north,35.25,35.25,0
-2035,2,2019,2,17,solar_south_c1,solar_pv,south,144.27,134.843,9.427000000000021
+2035,2,2019,2,17,solar_south_c1,solar_pv,south,144.305,134.8745,9.430499999999995
 2035,2,2019,2,17,hybrid_coast_c1,solar_pv_battery,coast,93.984,89.5856,4.398399999999995
 2035,2,2019,2,18,wind_north,wind_onshore,north,41.85,41.85,0
 2035,2,2019,2,18,solar_south_c1,solar_pv,south,74.69,72.221,2.468999999999994
